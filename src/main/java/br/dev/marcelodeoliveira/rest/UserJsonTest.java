@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
 public class UserJsonTest {
@@ -35,13 +36,32 @@ public class UserJsonTest {
 		 * path():
 		 * 
 		 * redireciona obtém o par escolhendo automaticamente o tipo do arquivo da
-		 * response (JSon, XML, &c)
+		 * response (JSON, XML, &c)
 		 */
 		Assert.assertEquals(new Integer(1), response.path("id"));
+		
+		//especificando o tipo da chave (string), passando via parâmetro
+		Assert.assertEquals(new Integer(1), response.path("%s", "id"));
 
-		Assert.assertEquals(new Integer(1), response.path("id"));
-		Assert.assertEquals(new Integer(1), response.path("id"));
-		Assert.assertEquals(new Integer(1), response.path("id"));
+		/**
+		 * jsonPath()
+		 * 
+		 * dedicado a somente obter pares somente por responses JSON
+		 */
+		
+		JsonPath jsPath = new JsonPath(response.body().asString());
+		Assert.assertEquals(1, jsPath.getInt("id"));
+		
+		/**
+		 * jsonPath() com from()
+		 * 
+		 *  desobriga a instanciação de um objeto JsonPath()
+		 */
+		JsonPath.from(response.asString()).getInt(ID);
+		Assert.assertEquals(1, jsPath.getInt("id"));
+		
+//		Assert.assertEquals(new Integer(1), response.path("id"));
+//		Assert.assertEquals(new Integer(1), response.path("id"));
 	}
 
 	public static Float getMinimumMonthlyRemoneration() {
