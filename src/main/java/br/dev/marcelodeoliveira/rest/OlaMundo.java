@@ -1,0 +1,111 @@
+
+package br.dev.marcelodeoliveira.rest;
+
+import static io.restassured.RestAssured.get;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.request;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsInRelativeOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+
+import io.restassured.RestAssured;
+import io.restassured.http.Method;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+
+public class OlaMundo {
+
+	public void olaMundoProlixo() {
+		// Response response = RestAssured.request(Method.GET,
+		// "http://restapi.wcaquino.me/ola");
+		Response response = request(Method.GET, "http://restapi.wcaquino.me/ola");
+		Assert.assertEquals(response.getBody(), "Ola Mundo!");
+		Assert.assertEquals(response.statusCode(), 200);
+		Assert.assertFalse(response.statusCode() == 404);
+		Assert.assertTrue("O Status code deve ser '200'", response.statusCode() == 200);
+		Assert.assertTrue(response.getBody().asString().equals("Ola Mundo!"));
+	}
+
+	public void devoConhecerOutrasFormasDeRestAssured() {
+		Response response = RestAssured.request(Method.GET, "http://restapi.wcaquino.me/ola");
+		ValidatableResponse validacao = response.then();
+		validacao.statusCode(200);
+
+		// response.then().statusCode(200);
+
+		get("https://restapi.wcaquino.me/ola");
+
+		given().when().get("https://restapi.wcaquino.me/ola").then()
+		.assertThat()	// pratically semantical-purpouse only;
+		.statusCode(HttpStatus.SC_OK)
+		.body(is("Ola Mundo!"))
+		.body(containsString("Mundo"))
+		.body(contains(is(not(null))));																		
+	}
+
+	public void DevoConhecerMatchersComHamcrest() {
+
+		// Seguindo a Maria Joaquina do Tutorial do Wagnão \_(ツ)_/
+		Response response = RestAssured.request(Method.GET, "http://restapi.wcaquino.me/ola");
+		String responseStr = response.getBody().asString();
+		String aluno1 = "Cirilo da Silva Santos";
+		String aluno2 = "Maria Joaquina Medici di Grimaldi-Habsburg";
+
+		List<String> disciplinas = Arrays.asList("Matemática", "Português", "História", "Geografia", "Ciências",
+				"Artes", "Educação Física");
+
+		String[] horarios = { "manha", "tarde", "noite" };
+
+		Integer requestStatus = response.getStatusCode();
+
+		// Numerical comparision
+		Assert.assertThat(requestStatus, Matchers.greaterThan(100));
+		Assert.assertThat(requestStatus, Matchers.lessThan(HttpStatus.SC_NOT_FOUND));
+
+		// Types - henceforth using static import examples
+		Assert.assertThat(aluno2, isA(String.class));
+
+		// sequential types - henceforth using static import examples
+
+		Assert.assertThat(disciplinas, hasSize(15));
+		Assert.assertThat(disciplinas, contains("Matemática"));
+		Assert.assertThat(disciplinas, containsInAnyOrder("Português", "Matemática"));
+		Assert.assertThat(disciplinas, containsInRelativeOrder("Artes", "Ciências", "Matemática"));
+
+		Assert.assertThat(horarios, hasItemInArray("manha"));
+
+		// Logical
+
+		Assert.assertThat(aluno1, is("Cirilo da Silva Santos"));
+
+		// Watch out! it's true because they're different objects.
+		Assert.assertThat("Cirilo da Silva", is(not(aluno1)));
+
+		Assert.assertThat(aluno1, allOf(startsWith("Joa"), endsWith("ina"), containsString("qui")));
+
+//
+//Assert.assertThat(Matchers.);
+//Assert.assertThat(Matchers.);
+//Assert.assertThat(Matchers.);
+//Assert.assertThat(Matchers.);
+//Assert.assertThat(Matchers.);
+//Assert.assertThat(Matchers.);
+	}
+}
+
