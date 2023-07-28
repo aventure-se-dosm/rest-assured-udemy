@@ -36,11 +36,12 @@ public class UserJsonTest {
 		 * path():
 		 * 
 		 * redireciona obtém o par escolhendo automaticamente o tipo do arquivo da
+		 * 
 		 * response (JSON, XML, &c)
 		 */
 		Assert.assertEquals(new Integer(1), response.path("id"));
-		
-		//especificando o tipo da chave (string), passando via parâmetro
+
+		// especificando o tipo da chave (string), passando via parâmetro
 		Assert.assertEquals(new Integer(1), response.path("%s", "id"));
 
 		/**
@@ -48,18 +49,18 @@ public class UserJsonTest {
 		 * 
 		 * dedicado a somente obter pares somente por responses JSON
 		 */
-		
+
 		JsonPath jsPath = new JsonPath(response.body().asString());
 		Assert.assertEquals(1, jsPath.getInt("id"));
-		
+
 		/**
 		 * jsonPath() com from()
 		 * 
-		 *  desobriga a instanciação de um objeto JsonPath()
+		 * desobriga a instanciação de um objeto JsonPath()
 		 */
-		JsonPath.from(response.asString()).getInt(ID);
+		JsonPath.from(response.asString()).getInt("id");
 		Assert.assertEquals(1, jsPath.getInt("id"));
-		
+
 //		Assert.assertEquals(new Integer(1), response.path("id"));
 //		Assert.assertEquals(new Integer(1), response.path("id"));
 	}

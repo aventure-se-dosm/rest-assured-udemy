@@ -7,7 +7,6 @@ import static io.restassured.RestAssured.request;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
@@ -52,11 +51,8 @@ public class OlaMundo {
 		// response.then().statusCode(200);
 
 		get("https://restapi.wcaquino.me/ola");
-
-		given().when().get("https://restapi.wcaquino.me/ola").then().assertThat() // pratically semantical-purpouse
-																					// only;
-				.statusCode(HttpStatus.SC_OK).body(is("Ola Mundo!")).body(containsString("Mundo"))
-				.body(is(not("")));
+		given().when().get("https://restapi.wcaquino.me/ola").then().assertThat() // pratically semantical-purpouse												// only;
+				.statusCode(HttpStatus.SC_OK).body(is("Ola Mundo!")).body(containsString("Mundo")).body(is(not("")));
 	}
 
 	@Test
@@ -64,18 +60,17 @@ public class OlaMundo {
 
 		// Seguindo a Maria Joaquina do Tutorial do Wagnão \_(ツ)_/
 		Response response = RestAssured.request(Method.GET, "http://restapi.wcaquino.me/ola");
-		String responseStr = response.getBody().asString();
+		Integer requestStatus = response.getStatusCode();
+
 		String aluno1 = "Cirilo da Silva Santos";
 		String aluno2 = "Maria Joaquina Medici di Grimaldi-Habsburg";
 
 		List<String> disciplinas = Arrays.asList("Matemática", "Português", "História", "Geografia", "Ciências",
 				"Artes", "Educação Física");
-		
 		List<Integer> primosAte20 = Arrays.asList(2, 3, 5, 7, 11, 13, 17, 19);
 
 		String[] horarios = { "manha", "tarde", "noite" };
 
-		Integer requestStatus = response.getStatusCode();
 
 		// Numerical comparision
 		Assert.assertThat(requestStatus, Matchers.greaterThan(100));
@@ -88,8 +83,10 @@ public class OlaMundo {
 
 		Assert.assertThat(disciplinas, hasSize(7));
 //		Assert.assertThat(disciplinas, contains());
-	//	Assert.assertThat(disciplinas, containsInAnyOrder("Matemática", "Português"));
-		//Assert.assertThat(disciplinas, containsInRelativeOrder("Artes", "Ciências", "Matemática"));
+		// Assert.assertThat(disciplinas, containsInAnyOrder("Matemática",
+		// "Português"));
+		// Assert.assertThat(disciplinas, containsInRelativeOrder("Artes", "Ciências",
+		// "Matemática"));
 
 		Assert.assertThat(primosAte20, contains(2, 3, 5, 7, 11, 13, 17, 19));
 		Assert.assertThat(primosAte20, containsInAnyOrder(5, 3, 11, 13, 2, 19, 7, 17));
@@ -103,8 +100,5 @@ public class OlaMundo {
 		Assert.assertThat("Cirilo da Silva", is(not(aluno1)));
 		Assert.assertThat(aluno2, allOf(startsWith("Mar"), endsWith("urg"), containsString("qui")));
 	}
-	
-	
-	
-	
+
 }
