@@ -1,7 +1,18 @@
 package br.dev.marcelodeoliveira.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+
+import java.util.Arrays;
 
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
@@ -20,7 +31,12 @@ public class UserJsonTest {
 	private boolean secure = false;
 
 	private String getUserUrlById(Integer index) {
-		return isSecure() ? (REQUEST_USER_SECURE + index) : (REQUEST_USER_INSECURE + index);
+		return getUsersUrl() + index;
+	}
+
+	private String getUsersUrl() {
+		return isSecure() ? (REQUEST_USER_SECURE) : (REQUEST_USER_INSECURE);
+
 	}
 
 	private boolean isSecure() {
@@ -40,20 +56,32 @@ public class UserJsonTest {
 				.body("name", containsString("Maria")).body("endereco.rua", is("Rua dos bobos"))
 				.body("salary", greaterThanOrEqualTo(getMinimumMonthlyRemoneration().intValue()));
 	}
+
 	@Test
 	public void deveVerificarJsonTerceiroNivel() {
-		given().
-		when()
-			.get(getUserUrlById(3))
-		.then().assertThat()
-			.statusCode(HttpStatus.SC_OK)
-			.body("name", containsString("Ana"))
-			.body("filhos[0].name", is("Zezinho"))
-			.body("filhos[1].name", is("Luizinho"))
-			.body("filhos.name", hasItem("Luizinho"))
-			.body("filhos.name", not(hasItem("Qualquer")))
-			.body("filhos.name", hasSize(2))
-			.body("filhos.name", hasItems("Zezinho", "Luizinho"));
+		given().when().get(getUserUrlById(3)).then().assertThat().statusCode(HttpStatus.SC_OK)
+				.body("name", containsString("Ana")).body("filhos[0].name", is("Zezinho"))
+				.body("filhos[1].name", is("Luizinho")).body("filhos.name", hasItem("Luizinho"))
+				.body("filhos.name", not(hasItem("Qualquer"))).body("filhos.name", hasSize(2))
+				.body("filhos.name", hasItems("Zezinho", "Luizinho"));
+	}
+
+	@Test
+	public void deveRetornarUsuarioInexistente() {
+		given().when().get(getUserUrlById(4)).then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND).body("error",
+				is("Usuário inexistente"));
+	}
+
+	@Test
+	public void deveVerificarListaRaiz() {
+		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).body("$", hasSize(3))
+				.body("name", hasItem("João da Silva")).body("name[0]", is("João da Silva"))
+				.body("name[1]", is("Maria Joaquina")).body("name[2]", is("Ana Júlia"))
+				.body("name", hasItems("João da Silva", "Maria Joaquina", "Ana Júlia"))
+				.body("salary", contains(1234.5677f, Integer.valueOf(2500), null))
+				.body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")));
+		;
+		// Convenção: '$' é escolhido para representar uma estrutura de lista;
 	}
 
 	@Test
