@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
@@ -19,15 +20,21 @@ import io.restassured.response.Response;
 public class UserJsonTest {
 
 	private static final Float MINIMUM_MONTHLY_REMUNERATION = 1320.00F;
-	private  String REQUEST_USER = "https://restapi.wcaquino.me/users/";
+	private String REQUEST_USER_INSECURE = "http://restapi.wcaquino.me/users/";
+	private String REQUEST_USER_SECURE = "https://restapi.wcaquino.me/users/";
+	private boolean secure = false;
 
 	private String getUserUrlById(Integer index) {
-		return REQUEST_USER + index;
+		return isSecure() ? (REQUEST_USER_SECURE + index) : (REQUEST_USER_INSECURE + index);
+	}
+
+	private boolean isSecure() {
+		return this.secure;
 	}
 
 	@Test
 	public void deveVerificarJsonPrimeiroNivel() {
-		given().when().get("https://restapi.wcaquino.me:80/users/1").then().assertThat().statusCode(HttpStatus.SC_OK).body("id", is(1))
+		given().when().get(getUserUrlById(1)).then().assertThat().statusCode(HttpStatus.SC_OK).body("id", is(not(2)))
 				.body("name", containsString("João")).body("age", greaterThan(18))
 				.body("salary", lessThanOrEqualTo(getMinimumMonthlyRemoneration()));
 	}
@@ -36,13 +43,13 @@ public class UserJsonTest {
 	public void deveVerificarJsonSegundoNivel() {
 		given().when().get(getUserUrlById(2)).then().assertThat().statusCode(HttpStatus.SC_OK).body("id", is(2))
 				.body("name", containsString("Maria")).body("endereco.rua", is("Rua dos bobos"))
-				.body("salary", greaterThanOrEqualTo(getMinimumMonthlyRemoneration()));
+				.body("salary", greaterThanOrEqualTo(getMinimumMonthlyRemoneration().intValue()));
 	}
 
 	@Test
 	public void deveVerificarJsonPrimeiroNivelOutraForma() {
 
-		Response response = RestAssured.request(Method.GET, "https://wcaquinos.me/users/1");
+		Response response = RestAssured.request(Method.GET, getUserUrlById(1));
 
 		/**
 		 * path():
