@@ -1,12 +1,7 @@
 package br.dev.marcelodeoliveira.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
@@ -44,6 +39,21 @@ public class UserJsonTest {
 		given().when().get(getUserUrlById(2)).then().assertThat().statusCode(HttpStatus.SC_OK).body("id", is(2))
 				.body("name", containsString("Maria")).body("endereco.rua", is("Rua dos bobos"))
 				.body("salary", greaterThanOrEqualTo(getMinimumMonthlyRemoneration().intValue()));
+	}
+	@Test
+	public void deveVerificarJsonTerceiroNivel() {
+		given().
+		when()
+			.get(getUserUrlById(3))
+		.then().assertThat()
+			.statusCode(HttpStatus.SC_OK)
+			.body("name", containsString("Ana"))
+			.body("filhos[0].name", is("Zezinho"))
+			.body("filhos[1].name", is("Luizinho"))
+			.body("filhos.name", hasItem("Luizinho"))
+			.body("filhos.name", not(hasItem("Qualquer")))
+			.body("filhos.name", hasSize(2))
+			.body("filhos.name", hasItems("Zezinho", "Luizinho"));
 	}
 
 	@Test
