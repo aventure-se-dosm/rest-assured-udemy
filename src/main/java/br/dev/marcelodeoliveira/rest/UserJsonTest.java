@@ -1,9 +1,24 @@
 package br.dev.marcelodeoliveira.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
@@ -19,7 +34,7 @@ public class UserJsonTest {
 	private static final Float MINIMUM_MONTHLY_REMUNERATION = 1320.00F;
 	private String REQUEST_USER_INSECURE = "http://restapi.wcaquino.me/users/";
 	private String REQUEST_USER_SECURE = "https://restapi.wcaquino.me/users/";
-	private boolean secure = false;
+	private boolean secure = true;
 
 	private String getUserUrlById(Integer index) {
 		return getUsersUrl() + index;
@@ -63,6 +78,7 @@ public class UserJsonTest {
 				is("Usuário inexistente"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void deveVerificarListaRaiz() {
 		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).body("$", hasSize(3))
@@ -105,6 +121,23 @@ public class UserJsonTest {
 		
 	}
 
+	@Test
+	public void devoUnirJsonPathComJava() {
+		List<String> listaDeNomes = given()
+		.when().get(getUsersUrl())
+			.then()
+			.statusCode(HttpStatus.SC_OK)
+			.extract().path("name.findAll{it.startsWith('Maria')}");
+	
+	//Salvo os campos 'name' de cada usuário, fazemos as asserções no Java
+		Assert.assertEquals(listaDeNomes.size(), 1);
+		Assert.assertTrue(listaDeNomes.get(0).equalsIgnoreCase("mAriA joAQuIna"));
+		
+		
+	
+	}
+	
+	
 	@Test
 	public void deveVerificarJsonPrimeiroNivelOutraForma() {
 
