@@ -1,6 +1,6 @@
-.bin
-.class
-.path
+./*.bin
+./*.class
+./*.path
 
 
-*/target/
+./target/
