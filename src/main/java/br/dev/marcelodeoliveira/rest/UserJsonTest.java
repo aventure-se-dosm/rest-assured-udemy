@@ -52,7 +52,7 @@ public class UserJsonTest {
 	@Test
 	public void deveVerificarJsonPrimeiroNivel() {
 		given().when().get(getUserUrlById(1)).then().assertThat().statusCode(HttpStatus.SC_OK).body("id", is(not(2)))
-				.body("name", containsString("Jo„o")).body("age", greaterThan(18))
+				.body("name", containsString("Jo√£o")).body("age", greaterThan(18))
 				.body("salary", lessThanOrEqualTo(getMinimumMonthlyRemoneration()));
 	}
 
@@ -75,20 +75,20 @@ public class UserJsonTest {
 	@Test
 	public void deveRetornarUsuarioInexistente() {
 		given().when().get(getUserUrlById(4)).then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND).body("error",
-				is("Usu·rio inexistente"));
+				is("Usu√°rio inexistente"));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void deveVerificarListaRaiz() {
 		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).body("$", hasSize(3))
-				.body("name", hasItem("Jo„o da Silva")).body("name[0]", is("Jo„o da Silva"))
-				.body("name[1]", is("Maria Joaquina")).body("name[2]", is("Ana J˙lia"))
-				.body("name", hasItems("Jo„o da Silva", "Maria Joaquina", "Ana J˙lia"))
+				.body("name", hasItem("Jo√£o da Silva")).body("name[0]", is("Jo√£o da Silva"))
+				.body("name[1]", is("Maria Joaquina")).body("name[2]", is("Ana J√∫lia"))
+				.body("name", hasItems("Jo√£o da Silva", "Maria Joaquina", "Ana J√∫lia"))
 				.body("salary", contains(1234.5677f, Integer.valueOf(2500), null))
 				.body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")));
 		;
-		// ConvenÁ„o: '$' È escolhido para representar uma estrutura de lista;
+		// Conven√ß√£o: '$' √© escolhido para representar uma estrutura de lista;
 	}
 
 	@Test
@@ -97,47 +97,42 @@ public class UserJsonTest {
 				.body("age.findAll{it <= 25}.size()", is(2)).body("age.findAll{it <= 25 && it > 20}.size()", is(1))
 				.body("age.findAll{it <= 25 && it > 20}.size()", is(1))
 				.body("findAll{it.age <= 25 && it.age > 20}.name", hasItem("Maria Joaquina"))
-				
+
 				.body("findAll{it.age <= 25}[0].name", is("Maria Joaquina"))
-				.body("findAll{it.age <= 25}[1].name", is("Ana J˙lia"))
-				.body("findAll{it.age <= 25}[-1].name", is("Ana J˙lia"))
+				.body("findAll{it.age <= 25}[1].name", is("Ana J√∫lia"))
+				.body("findAll{it.age <= 25}[-1].name", is("Ana J√∫lia"))
 				.body("findAll{it.age <= 25}[-2].name", is("Maria Joaquina"))
-				
+
 				.body("find{it.age <= 25}.name", is("Maria Joaquina"))
-				
-				.body("findAll{it.name.contains('n')}.name", hasItems("Maria Joaquina", "Ana J˙lia"))
-				.body("findAll{it.name.length() > 10}.name", hasItems("Jo„o da Silva", "Maria Joaquina"))
-				
+
+				.body("findAll{it.name.contains('n')}.name", hasItems("Maria Joaquina", "Ana J√∫lia"))
+				.body("findAll{it.name.length() > 10}.name", hasItems("Jo√£o da Silva", "Maria Joaquina"))
+
 				.body("name.collect{it.toUpperCase()}", hasItem("MARIA JOAQUINA"))
-				
+
 				.body("name.findAll{it.startsWith('Maria')}.collect{it.toUpperCase()}", hasItem("MARIA JOAQUINA"))
-				.body("name.findAll{it.startsWith('Maria')}.collect{it.toUpperCase()}.toArray()", allOf(arrayContaining("MARIA JOAQUINA"), arrayWithSize(1)))
+
+				// it doesn't work in JRE 1.8
+				.body("name.findAll{it.startsWith('Maria')}.collect{it.toUpperCase()}.toArray()",
+						allOf(arrayContaining("MARIA JOAQUINA"), arrayWithSize(1)))
 				.body("age.collect{it*2}", hasItems(60, 50, 40))
-				
-				.body("id.max()", is(3))
-				.body("salary.findAll{it != null}.sum()", is(closeTo(3734.5678f, 0.001)))
+
+				.body("id.max()", is(3)).body("salary.findAll{it != null}.sum()", is(closeTo(3734.5678f, 0.001)))
 				.body("salary.findAll{it != null}.sum()", allOf(greaterThan(3000d), lessThan(5000d)))
 				.body("salary.min()", is(1234.5678f));
-		
+
 	}
 
 	@Test
 	public void devoUnirJsonPathComJava() {
-		List<String> listaDeNomes = given()
-		.when().get(getUsersUrl())
-			.then()
-			.statusCode(HttpStatus.SC_OK)
-			.extract().path("name.findAll{it.startsWith('Maria')}");
-	
-	//Salvo os campos 'name' de cada usu·rio, fazemos as asserÁıes no Java
+		List<String> listaDeNomes = given().when().get(getUsersUrl()).then().statusCode(HttpStatus.SC_OK).extract()
+				.path("name.findAll{it.startsWith('Maria')}");
+
+		// Salvo os campos 'name' de cada usu√°rio, fazemos as asser√ß√µes no Java
 		Assert.assertEquals(listaDeNomes.size(), 1);
 		Assert.assertTrue(listaDeNomes.get(0).equalsIgnoreCase("mAriA joAQuIna"));
-		
-		
-	
 	}
-	
-	
+
 	@Test
 	public void deveVerificarJsonPrimeiroNivelOutraForma() {
 
@@ -146,13 +141,13 @@ public class UserJsonTest {
 		/**
 		 * path():
 		 * 
-		 * redireciona obtÈm o par escolhendo automaticamente o tipo do arquivo da
+		 * redireciona obt√©m o par escolhendo automaticamente o tipo do arquivo da
 		 * 
 		 * response (JSON, XML, &c)
 		 */
 		Assert.assertEquals(new Integer(1), response.path("id"));
 
-		// especificando o tipo da chave (string), passando via par‚metro
+		// especificando o tipo da chave (string), passando via par√¢metro
 		Assert.assertEquals(new Integer(1), response.path("%s", "id"));
 
 		/**
@@ -167,13 +162,14 @@ public class UserJsonTest {
 		/**
 		 * jsonPath() com from()
 		 * 
-		 * desobriga a instanciaÁ„o de um objeto JsonPath()
+		 * desobriga a instancia√ß√£o de um objeto JsonPath()
 		 */
 		JsonPath.from(response.asString()).getInt("id");
-		Assert.assertEquals(1, jsPath.getInt("id"));
 
-//		Assert.assertEquals(new Integer(1), response.path("id"));
-//		Assert.assertEquals(new Integer(1), response.path("id"));
+		// duas formas distintas (aceita tanto o tipo simples, como seu wrapper)
+		Assert.assertEquals(1, jsPath.getInt("id"));
+		Assert.assertEquals(new Integer(1), response.path("id"));
+
 	}
 
 	public static Float getMinimumMonthlyRemoneration() {

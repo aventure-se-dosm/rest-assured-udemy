@@ -42,7 +42,7 @@ public class UserXmlTest {
 																											// text
 				.body("user.filhos.size()", is(1)).body("user.filhos.name.size()", is(2))
 
-				// forma esdrúxula, mas possível
+				// forma esdrï¿½xula, mas possï¿½vel
 				.body("user.filhos", hasItems("ZezinhoLuizinho"))
 				.body("user.filhos.name", hasItems("Zezinho", "Luizinho")).body("user.filhos.name", hasItem("Zezinho"))
 				.body("user.filhos.name[0]", is("Zezinho")).body("user.filhos.name[1]", is("Luizinho"));
@@ -64,7 +64,7 @@ public class UserXmlTest {
 				.body("name", is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))) // expected: text
 				.body("filhos.size()", is(1)).body("filhos.name.size()", is(2))
 
-				// forma esdrúxula, mas possível
+				// forma esdrï¿½xula, mas possï¿½vel
 				.body("filhos", hasItems("ZezinhoLuizinho"))
 
 				// refefinindo a raiz para 'user.filhos':
@@ -116,22 +116,22 @@ public class UserXmlTest {
 		.body(hasXPath("//name[text()='Ana Julia']/following-sibling::filhos", allOf(containsString("Zezinho"), containsString("Luizinho")))) 
 		
 		.body(hasXPath("/users/user[last()]/name", is("Ana Julia")))
-		.body(hasXPath("/users/user/name", is("João da Silva")))
-		.body(hasXPath("//name", is("João da Silva")))
-		.body(hasXPath("//name['0']", is("João da Silva")))
+		.body(hasXPath("/users/user/name", is("JoÃ£o da Silva")))
+		.body(hasXPath("//name", is("JoÃ£o da Silva")))
+		.body(hasXPath("//name['0']", is("JoÃ£o da Silva")))
 
-	//	.body(hasXPath("/users/user/name[0]", is("João da Silva"))) //it doesn't work: index should be written surrounded with simple quotes
-	//	.body(hasXPath("//name[0]", is("João da Silva"))) //not work
-		.body(hasXPath("//user/name", is("João da Silva")))
-		.body(hasXPath("/users/user/name", is("João da Silva")))
+	//	.body(hasXPath("/users/user/name[0]", is("JoÃ£o da Silva"))) //it doesn't work: index should be written surrounded with simple quotes
+	//	.body(hasXPath("//name[0]", is("JoÃ£o da Silva"))) //not work
+		.body(hasXPath("//user/name", is("JoÃ£o da Silva")))
+		.body(hasXPath("/users/user/name", is("JoÃ£o da Silva")))
 
 	//	First index
-		.body(hasXPath("/users/user/name['0']", is("João da Silva"))) 
-		.body(hasXPath("/users/user/name['0']", is("João da Silva"))) 
-		.body(hasXPath("/users/user/name['any_string_7y88yggy8g']", is("João da Silva"))) 
+		.body(hasXPath("/users/user/name['0']", is("JoÃ£o da Silva"))) 
+		.body(hasXPath("/users/user/name['0']", is("JoÃ£o da Silva"))) 
+		.body(hasXPath("/users/user/name['any_string_7y88yggy8g']", is("JoÃ£o da Silva"))) 
 		
 	//	element with a specific index	
-		.body(hasXPath("/users/user[1]/name", is("João da Silva")))
+		.body(hasXPath("/users/user[1]/name", is("JoÃ£o da Silva")))
 		.body(hasXPath("/users/user[2]/name", is("Maria Joaquina")))
 		.body(hasXPath("/users/user[3]/name", is("Ana Julia")))
 
@@ -145,7 +145,7 @@ public class UserXmlTest {
 	//	relational operations	
 		.body(hasXPath("//user[age < 24]/name", is("Ana Julia")))
 		.body(hasXPath("//user[age > 20 and age  < 30]/name", is("Maria Joaquina")))
-		.body(hasXPath("//user[age > 29][age < 31]/name", is("João da Silva")))
+		.body(hasXPath("//user[age > 29][age < 31]/name", is("JoÃ£o da Silva")))
 ;
 	}
 }

@@ -1,6 +1,7 @@
-./*.bin
-./*.class
-./*.path
+.settings/*
+*.bin
+*.class
+*.path
 
-
-./target/
+target/
+target/*
