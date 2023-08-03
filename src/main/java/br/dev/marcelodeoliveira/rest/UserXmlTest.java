@@ -51,7 +51,7 @@ public class UserXmlTest {
 																											// text
 				.body("user.filhos.size()", is(1)).body("user.filhos.name.size()", is(2))
 
-				// forma esdr�xula, mas poss�vel
+				// forma esdr�xula, mas possível
 				.body("user.filhos", hasItems("ZezinhoLuizinho"))
 				.body("user.filhos.name", hasItems("Zezinho", "Luizinho")).body("user.filhos.name", hasItem("Zezinho"))
 				.body("user.filhos.name[0]", is("Zezinho")).body("user.filhos.name[1]", is("Luizinho"));
@@ -64,10 +64,10 @@ public class UserXmlTest {
 				.body("name", is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))).body("filhos.size()", is(1))
 				.body("filhos.name.size()", is(2))
 
-				// forma esdr�xula, mas poss�vel
+				// forma esdr�xula, mas possível
 				.body("filhos", hasItems("ZezinhoLuizinho"))
 
-				// refefinindo a raiz para 'user.filhos':
+				// redefinindo a raiz para 'user.filhos':
 				.rootPath("user.filhos").body("size()", is(1)).body("name.size()", is(2))
 				.body("name", hasItems("Zezinho", "Luizinho")).body("name", hasItem("Zezinho"))
 				.body("name[0]", is("Zezinho")).body("name[1]", is("Luizinho"));
