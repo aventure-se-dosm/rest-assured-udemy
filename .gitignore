@@ -1,7 +1,9 @@
 .settings/*
+.settings/
 *.bin
 *.class
 *.path
+
 
 target/
 target/*

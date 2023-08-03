@@ -1,17 +1,9 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasXPath;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
 import java.util.ArrayList;
 
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.hamcrest.xml.HasXPath;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,49 +11,63 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 import io.restassured.internal.path.xml.NodeImpl;
-//import io.restassured.specification.RequestSpecification;
 
-public class UserXmlTest {
+public class UserXmlTestWithStaticAttributes {
 
 //	private static final Float MINIMUM_MONTHLY_REMUNERATION = 1320.00F;
-	private String REQUEST_USER_INSECURE = "http://restapi.wcaquino.me/usersXML";
-	private String REQUEST_USER_SECURE = "https://restapi.wcaquino.me/usersXML";
-	private boolean secure = true;
+//	private String REQUEST_USER_INSECURE = "http://restapi.wcaquino.me/usersXML";
+//	private String REQUEST_USER_SECURE = "https://restapi.wcaquino.me/usersXML";
+	 private String RESOURCE_USERS_XML = "/usersXML";
+	// private boolean secure = true;
 
+	// static attributes - 23th lession
+	// always static and public <--- using BeforeClass
+
+	// desta vez os métodos lançam mão apenas do 'recurso' quando necessário
+	// uma vez que definimos estaticamente a url
+
+	@BeforeClass
+	public static void setup() {
+		RestAssured.baseURI = "https://restapi.wcaquino.me";
+		RestAssured.basePath = "/usersXML/";
+	}
 
 	private String getUserUrlById(Integer index) {
-		return getUsersUrl() + "/" + index;
+		return (getUsersUrl() + "/" + index);
 	}
 
+//
 	private String getUsersUrl() {
-		return isSecure() ? (REQUEST_USER_SECURE) : (REQUEST_USER_INSECURE);
-
+		return RESOURCE_USERS_XML;
 	}
-
-	private boolean isSecure() {
-		return this.secure;
-	}
-	
+//
+//	private boolean isSecure() {
+//		return this.secure;
+//	}
 
 	@Test
-	public void devoTrabalharComXml() {
-		given().when().get(getUserUrlById(3)).then().assertThat().statusCode(HttpStatus.SC_OK)
-				.body("user.name", is("Ana Julia")).body("user.@id", is("3")).body("user.@id", not(is(3))) // expected:
-																											// text
-				.body("user.filhos.size()", is(1)).body("user.filhos.name.size()", is(2))
-
-				// forma esdr�xula, mas poss�vel
-				.body("user.filhos", hasItems("ZezinhoLuizinho"))
-				.body("user.filhos.name", hasItems("Zezinho", "Luizinho")).body("user.filhos.name", hasItem("Zezinho"))
-				.body("user.filhos.name[0]", is("Zezinho")).body("user.filhos.name[1]", is("Luizinho"));
+	public  void devoTrabalharComXml() {
+		RestAssured.given()
+				 .log().all()
+				.when()
+				// .get("/userXML")
+//				 --> Same as below
+				.get("3")
+				.then()
+				// .assertThat()
+				.statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test
 	public void devoTrabalharComXmlNaRaiz() {
-		given().when().get(getUserUrlById(3)).then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
-				// avoids the root's name (user) be always needed in path's string expected: text
-				.body("name", is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))).body("filhos.size()", is(1))
+		
+		given().when().get("3").then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
+				// avoids the root's name (user) be always needed in path's string expected:
+				// text
+				.body("name", Matchers.is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))).body("filhos.size()", is(1))
 				.body("filhos.name.size()", is(2))
 
 				// forma esdr�xula, mas poss�vel
@@ -78,7 +84,7 @@ public class UserXmlTest {
 
 		ArrayList<NodeImpl> names = given()
 				// RequestSpecification names = given()
-				.when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).extract()
+				.when().get("").then().assertThat().statusCode(HttpStatus.SC_OK).extract()
 				.path("users.user.name.findAll{it.toString().contains('n')}");
 
 		Assert.assertEquals(2, names.size());
@@ -98,7 +104,7 @@ public class UserXmlTest {
 
 	@Test
 	public void devoFazerPesquisasAvancadasComXPath() {
-		given().when().get("https://restapi.wcaquino.me/usersXML").then()// .assertThat()
+		given().when().get().then()// .assertThat()
 				.statusCode(HttpStatus.SC_OK).body(hasXPath("count(/users/user)", is("3")))
 				.body(hasXPath("count(/users/user)", is(not("2"))))
 
