@@ -20,12 +20,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.internal.path.xml.NodeImpl;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 
 public class UserXmlTestWithStaticAttributes {
 
 	private String RESOURCE_USERS_XML = "/usersXML";
-
+	
+	public static RequestSpecification reqSpec;
+	public static ResponseSpecification resSpec;
 	// static attributes - 23th lession
 	// always static and public <--- using BeforeClass
 
@@ -36,6 +43,16 @@ public class UserXmlTestWithStaticAttributes {
 	public static void setup() {
 		RestAssured.baseURI = "https://restapi.wcaquino.me";
 		RestAssured.basePath = "/usersXML/";
+
+		RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+		reqBuilder.log(LogDetail.ALL).build();
+		
+		ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
+		resBuilder.expectStatusCode(HttpStatus.SC_OK).build();
+
+		//allowing all specifications above used by any test
+		RestAssured.requestSpecification = reqSpec;
+		RestAssured.responseSpecification = resSpec;
 	}
 
 	private String getUserUrlById(Integer index) {
@@ -50,25 +67,21 @@ public class UserXmlTestWithStaticAttributes {
 	public void devoTrabalharComXml() {
 		RestAssured.given().log().all().when()
 
-	//				 --> Same as below
+				// --> Same as below
 				.get("3").then()
-				// .assertThat()
+				.assertThat()
 				.statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test
 	public void devoTrabalharComXmlNaRaiz() {
 
-		given()
-		.when()
-			.get("3")
-		.then().assertThat()
-			.statusCode(HttpStatus.SC_OK).rootPath("user")
+		given().when().get("3").then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
 
-			.body("name", Matchers.is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3)))
-			.body("filhos.size()", is(1)).body("filhos.name.size()", is(2))
+				.body("name", Matchers.is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3)))
+				.body("filhos.size()", is(1)).body("filhos.name.size()", is(2))
 				// forma esdr�xula, mas possível
-			.body("filhos", hasItems("ZezinhoLuizinho"))
+				.body("filhos", hasItems("ZezinhoLuizinho"))
 
 				// redefinindo a raiz para 'user.filhos':
 				.rootPath("user.filhos").body("size()", is(1)).body("name.size()", is(2))
@@ -93,41 +106,40 @@ public class UserXmlTestWithStaticAttributes {
 	public void devoFazerPesquisasAvancadasComXMLRequestSpecificationEJava() {
 
 		// RequestSpecification names =
-		given()
-		.when()
-			.get(getUsersUrl())
-		.then().assertThat()
-			.statusCode(HttpStatus.SC_OK)
-			.extract()
-			.path("users.user.name.findAll{it.toString().contains('n')}");
+		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).extract()
+				.path("users.user.name.findAll{it.toString().contains('n')}");
 		// TODO: Assertions using <<RequestSpecification>> name worthly!
 	}
 
 	@Test
 	public void devoFazerPesquisasAvancadasComXPath() {
 		given()
+		//.spec(reqSpec) --> no longer needed
+		//                   as setup in the method setUp()
 		.when()
 			.get()
 		.then()// .assertThat()
-			.statusCode(HttpStatus.SC_OK).body(hasXPath("count(/users/user)", is("3")))
-			.body(hasXPath("count(/users/user)", is(not("2"))))
-			.body(hasXPath("/users/user[@id='1']")) // full form of this element				
-			.body(hasXPath("//user[@id='2']")) // shortened form of this element
-			.body(hasXPath("//name[text()='Luizinho']/../../name", is("Ana Julia")))
+			//.spec(resSpec) --> no longer needed
+		//                   as setup in the method setUp()     
+				.statusCode(HttpStatus.SC_OK).body(hasXPath("count(/users/user)", is("3")))
+				.body(hasXPath("count(/users/user)", is(not("2")))).body(hasXPath("/users/user[@id='1']")) // full form
+																											// of this
+																											// element
+				.body(hasXPath("//user[@id='2']")) // shortened form of this element
+				.body(hasXPath("//name[text()='Luizinho']/../../name", is("Ana Julia")))
 
-			// It doesn't work: hasHpath expect as 2nd argument an Iterable<String>
-			// .body(hasXPath("//name[text()='Ana Julia']/following-siblings::filhos", hasItems("Zezinho", "Luizinho")))
-			.body(hasXPath(
-					"//name[text()='Ana Julia']/following-sibling::filhos",
-					allOf(containsString("Zezinho"), containsString("Luizinho"))))
+				// It doesn't work: hasHpath expect as 2nd argument an Iterable<String>
+				// .body(hasXPath("//name[text()='Ana Julia']/following-siblings::filhos",
+				// hasItems("Zezinho", "Luizinho")))
+				.body(hasXPath("//name[text()='Ana Julia']/following-sibling::filhos",
+						allOf(containsString("Zezinho"), containsString("Luizinho"))))
 
 				.body(hasXPath("/users/user[last()]/name", is("Ana Julia")))
 				.body(hasXPath("/users/user/name", is("João da Silva"))).body(hasXPath("//name", is("João da Silva")))
 				.body(hasXPath("//name['0']", is("João da Silva")))
 
-				//	 .body(hasXPath("/users/user/name[0]", is("João da Silva"))) 
-				//	it doesn't  work: index should be written surrounded with simple quotes
-				//	 .body(hasXPath("//name[0]", is("João da Silva"))) //not work
+				// .body(hasXPath("/users/user/name[0]", is("João da Silva")))
+				// it doesn't work: index should be written surrounded with simple quotes
 				.body(hasXPath("//user/name", is("João da Silva")))
 				.body(hasXPath("/users/user/name", is("João da Silva")))
 
