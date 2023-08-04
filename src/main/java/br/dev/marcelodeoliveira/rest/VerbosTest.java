@@ -37,7 +37,7 @@ public class VerbosTest {
 		return getUrlBase() + getUsersResource();
 	}
 	private String getUsersEndpoint(Integer index) {
-		return getUsersEndpoint() + index;
+		return getUsersEndpoint() +"/"+ index;
 	}
 	
 	private String getUsersXMLEndpoint() {
@@ -175,6 +175,28 @@ public class VerbosTest {
 			.body("age", greaterThan(new Integer(0)))
 			.body("age", is(30))
 			;
+	}
+	
+	@Test
+	public void devoRemoverUsuario() {
+		given().log().all()
+		.when()
+			.delete(getUsersEndpoint(1))
+		.then().log().all()
+			.assertThat()
+			.statusCode(HttpStatus.SC_NO_CONTENT)
+			;
+	}
+	@Test
+	public void naoDevoRemoverUsuarioUnexistente() {
+		given().log().all()
+		.when()
+			.delete(getUsersEndpoint(9))
+		.then().log().all()
+		.assertThat()
+			.statusCode(HttpStatus.SC_BAD_REQUEST) //this status hides the fact we don't have a resource /user/1.
+			.body("error", is("Registro inexistente"))
+		;
 	}
 
 }
