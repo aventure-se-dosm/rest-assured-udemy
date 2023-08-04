@@ -156,6 +156,7 @@ public class VerbosTest {
 			.body("error", is("Name é um atributo obrigatório"))		
 		;
 	}
+
 	
 	@Test
 	public void devoCustomizarUrl() {
@@ -175,4 +176,5 @@ public class VerbosTest {
 			.body("age", is(30))
 			;
 	}
+
 }
