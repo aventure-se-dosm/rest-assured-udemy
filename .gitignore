@@ -5,5 +5,5 @@
 *.path
 
 
-target/
-target/*
+./target/
+./target/*
