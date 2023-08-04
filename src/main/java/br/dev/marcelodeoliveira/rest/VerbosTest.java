@@ -6,9 +6,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.HashMap;
+
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import java.util.Map;
 
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -78,6 +82,24 @@ public class VerbosTest {
 			.body("name", is("José"))
 			.body("age", greaterThan(new Integer(0)))
 			.body("age", is(50))
+		;
+	}
+	@Test
+	public void deveSalvarUmUsuarioJsonUsandoMap() {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "José Mapper");
+		params.put("age", 29);
+		given().log().all()
+			.contentType(ContentType.JSON)
+			.body(params)
+		.when()
+		.post(getUsersEndpoint())
+		.then().log().all().assertThat()
+		.body("id", is(notNullValue()))
+		.body("name", is("José Mapper"))
+		.body("age", greaterThan(new Integer(0)))
+		.body("age", is(29))
 		;
 	}
 	@Test 
