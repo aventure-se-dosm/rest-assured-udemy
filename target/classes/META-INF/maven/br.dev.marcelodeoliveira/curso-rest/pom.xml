@@ -31,6 +31,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
 				<configuration>
+				<encoding>UTF8</encoding>
 					<source>11</source>
 					<target>11</target>
 				</configuration>
