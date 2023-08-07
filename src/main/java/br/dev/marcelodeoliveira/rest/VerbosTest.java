@@ -7,20 +7,21 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Map;
-
+import br.dev.marcelodeoliveira.rest.model.User;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 
 
 public class VerbosTest {
 	
+	private final Float MINIMUM_SALARY = 1320.00F;
 	private final  String URL_BASE = "https://restapi.wcaquino.me";
 	private final  String URL_RESOURCE_USERS = "/users";
 	private final String URL_RESOURCE_USERSXML = "/usersXML";
@@ -108,12 +109,39 @@ public class VerbosTest {
 		.post(getUsersEndpoint())
 		.then().log().all().assertThat()
 		.body("id", is(notNullValue()))
-		.body("name", is("José Mapper"))
+		.body("name", is("Maria Mapper"))
 		.body("age", greaterThan(new Integer(0)))
 		.body("age", is(29))
 		;
 	}
-	@Test //@Ignore
+	@Test
+	public void deveSalvarUmUsuarioJsonUsandoModelObject() {
+		
+		/**
+		 * [1] Dependência para serialização: GSON
+		 * 
+		 * [2] Exceção por ausência:
+		 * java.lang.IllegalStateException: Cannot serialize object because no JSON
+		 * serializer found in classpath. Please put either Jackson (Databind) or Gson
+		 * in the classpath.
+		 * 
+		 */
+		
+		User user = new User("Maria Mapper", 29, 3504.00F);
+		given().log().all()
+		.contentType(ContentType.JSON)
+		.body(user)
+		.when()
+		.post(getUsersEndpoint())
+		.then().log().all().assertThat()
+		.body("id", is(notNullValue()))
+		.body("name", is("Maria Mapper"))
+		.body("age", greaterThan(new Integer(0)))
+		.body("age", is(29))
+		.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()))
+		;
+	}
+	@Test @Ignore
 	public void deveSalvarUmUsuarioXMLUsandoMap() {
 
 		/*
