@@ -6,17 +6,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.HttpStatus;
-import org.apache.http.protocol.HTTP;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import br.dev.marcelodeoliveira.rest.model.User;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 
@@ -86,106 +79,6 @@ public class VerbosTest {
 			.body("name", is("José"))
 			.body("age", greaterThan(new Integer(0)))
 			.body("age", is(50))
-		;
-	}
-	@Test
-	public void deveSalvarUmUsuarioJsonUsandoMap() {
-		
-		/**
-		 * [1] Dependência para serialização: GSON
-		 * 
-		 * [2] Exceção por ausência:
-		 * java.lang.IllegalStateException: Cannot serialize object because no JSON
-		 * serializer found in classpath. Please put either Jackson (Databind) or Gson
-		 * in the classpath.
-		 * 
-		 */
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("name", "Maria Mapper");
-		params.put("age", 29);
-		given().log().all()
-			.contentType(ContentType.JSON)
-			.body(params)
-		.when()
-		.post(getUsersEndpoint())
-		.then().log().all().assertThat()
-		.body("id", is(notNullValue()))
-		.body("name", is("Maria Mapper"))
-		.body("age", greaterThan(new Integer(0)))
-		.body("age", is(29))
-		;
-	}
-	@Test
-	public void deveSalvarUmUsuarioJsonUsandoModelObject() {
-		
-		/**
-		 * [1] Dependência para serialização: GSON
-		 * 
-		 * [2] Exceção por ausência:
-		 * java.lang.IllegalStateException: Cannot serialize object because no JSON
-		 * serializer found in classpath. Please put either Jackson (Databind) or Gson
-		 * in the classpath.
-		 * 
-		 */
-		
-		User user = new User("Maria Mapper", 29, 3504.00F);
-		given().log().all()
-		.contentType(ContentType.JSON)
-		.body(user)
-		.when()
-		.post(getUsersEndpoint())
-		.then().log().all().assertThat()
-		.body("id", is(notNullValue()))
-		.body("name", is("Maria Mapper"))
-		.body("age", greaterThan(new Integer(0)))
-		.body("age", is(29))
-		.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()))
-		;
-	}
-	@Test
-	public void deveDesserializarumModelObjectAoSalvarUmUsuario() {
-
-		
-		User user = new User("Usuario Desserializado", 29, 3504.00F);
-		given().log().all()
-		.contentType(ContentType.JSON)
-		.body(user)
-		.when()
-		.post(getUsersEndpoint())
-		.then().log().all().statusCode(HttpStatus.SC_CREATED)
-		.extract().body().as(User.class);
-		
-		Assert.assertNotNull(user);
-		Assert.assertEquals(user.getName(), "Usuario Desserializado");
-		;
-	}
-	@Test @Ignore
-	public void deveSalvarUmUsuarioXMLUsandoMap() {
-
-		/*
-		 * [1]Dependência de serialização: (A investigar)
-		 *
-		 * [2] Exceção por ausência javax.xml.bind.MarshalException - with linked
-		 * exception: [com.sun.istack.SAXException2: não é possível fazer marshalling do
-		 * tipo "java.util.HashMap" como um elemento porque ele não foi encontrado em
-		 * uma anotação @XmlRootElement]
-		 * 
-		 */
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("name", "Maria Mapper");
-		params.put("age", 29);
-		given().log().all()
-		.contentType(ContentType.XML)
-		.body(params)
-		.when()
-		.post(getUsersEndpoint())
-		.then().log().all().assertThat()
-		.body("id", is(notNullValue()))
-		.body("name", is("Maria Mapper"))
-		//.body("age", greaterThan(new Integer(0)))
-		.body("age", is("29"))
 		;
 	}
 	@Test 
@@ -302,7 +195,8 @@ public class VerbosTest {
 			.delete(getUsersEndpoint(9))
 		.then().log().all()
 		.assertThat()
-			.statusCode(HttpStatus.SC_BAD_REQUEST) //this status hides the fact we don't have a resource /user/1.
+			.statusCode(HttpStatus.SC_BAD_REQUEST) 
+			//this status hides the fact we don't have a resource /user/1.
 			.body("error", is("Registro inexistente"))
 		;
 	}

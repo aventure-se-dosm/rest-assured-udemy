@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import br.dev.marcelodeoliveira.rest.model.User;
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 
 //anotações para des-/serialização com XML
 
@@ -44,7 +43,6 @@ public class Serialization {
 	}
 
 	private String getUsersXMLResource() {
-		// TODO Auto-generated method stub
 		return this.URL_RESOURCE_USERSXML;
 	}
 
@@ -52,17 +50,8 @@ public class Serialization {
 		return getUrlBase() + getUsersResource();
 	}
 
-	private String getUsersEndpoint(Integer index) {
-		return getUsersEndpoint() + "/" + index;
-	}
-
 	private String getUsersXMLEndpoint() {
 		return getUrlBase() + getUsersXMLResource();
-	}
-
-	private void someSwitchByVerb(Method method) {
-		// TODO: any method which some arg is supposded to be a REST verb enum.
-		// look at this as a template.
 	}
 
 	// na verdade precisamos gerar uma DTO
@@ -119,16 +108,10 @@ public class Serialization {
 		 */
 		User user = new User("Maria Mapper", 29, 3504.00F);
 
-		given().log().all()
-			.contentType(ContentType.JSON)
-			.body(user)
-		.when()
-			.post(getUsersEndpoint())
-		.then().log().all()
-			.assertThat()
-			.body("id", is(notNullValue()))
-			.body("name", is("Maria Mapper"))
-			.body("age", greaterThan(new Integer(0))).body("age", is(29))				.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()));
+		given().log().all().contentType(ContentType.JSON).body(user).when().post(getUsersEndpoint()).then().log().all()
+				.assertThat().body("id", is(notNullValue())).body("name", is("Maria Mapper"))
+				.body("age", greaterThan(new Integer(0))).body("age", is(29))
+				.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()));
 	}
 
 	@Test
@@ -176,17 +159,45 @@ public class Serialization {
 		// config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
 
 		User user = new User("Usuário Desserializado", new Integer(40), 2500.00f);
-		given().log().all()
-			.contentType(ContentType.XML)
-			.body(user)
-		.when()
-			.post(getUsersXMLEndpoint())
-		.then().log().all()
-			.assertThat()
-			.statusCode(201)
-			.body("user.@id", is(notNullValue()))
-			.body("user.name", is("Usuário Desserializado"))
-			.body("user.age", is("40"));
+		given().log().all().contentType(ContentType.XML).body(user).when().post(getUsersXMLEndpoint()).then().log()
+				.all().assertThat().statusCode(201).body("user.@id", is(notNullValue()))
+				.body("user.name", is("Usuário Desserializado")).body("user.age", is("40"));
 	}
 
+	@Test
+	public void deveDesserializarUmModelObjectAoSalvarUmUsuario() {
+
+		User createdUser =
+				
+			given().log().all()
+			.contentType(ContentType.XML)
+				.body(new User("Usuario Desserializado", 19, 2400.00F))
+			.when()
+				.post(getUsersXMLEndpoint())
+			.then().log().all()
+				.statusCode(HttpStatus.SC_CREATED)
+
+				/*
+				 * remember: we use '@XmlAttribute' right above the attribute 'id' since we'd
+				 * like to receive him like that on your response body one time 'id' comes
+				 * inside <user> in the regarding xml code.
+				 */
+				.extract().body().as(User.class);
+
+		Assert.assertNotNull(createdUser);
+		Assert.assertNotNull(createdUser.getId());
+		Assert.assertEquals(createdUser.getName(), "Usuario Desserializado");
+		Assert.assertEquals(createdUser.getAge(), new Integer(19));
+		Assert.assertEquals(createdUser.getSalary(), new Float(2400.00f));
+	
+	//  The underlying commented code snippets will work as well:
+	//	
+	//	Assert.assertTrue(createdUser.getAge() == 19);
+	//	Assert.assertTrue(createdUser.getSalary() == 2400.00f);
+	//  --> We can assert if the received value from the Wrapper variable
+	// in some ModelObject is equal to the simple type received value.
+	//
+	// --> Not the best way to assert incoming values, either.
+		;
+	}
 }
