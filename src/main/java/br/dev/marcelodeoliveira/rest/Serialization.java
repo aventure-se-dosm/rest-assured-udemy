@@ -164,31 +164,30 @@ public class Serialization {
 				.body("user.name", is("Usuário Desserializado")).body("user.age", is("40"));
 	}
 
-	@Test
-	public void deveDesserializarUmModelObjectAoSalvarUmUsuario() {
-
-		User createdUser =
-				
+@Test
+public void deveDesserializarUmModelObjectAoSalvarUmUsuario() {
+	
+	User createdUser =
+			
 			given().log().all()
 			.contentType(ContentType.XML)
-				.body(new User("Usuario Desserializado", 19, 2400.00F))
+			.body(new User("Usuario Desserializado", 19, 2400.00F))
 			.when()
-				.post(getUsersXMLEndpoint())
+			.post(getUsersXMLEndpoint())
 			.then().log().all()
-				.statusCode(HttpStatus.SC_CREATED)
-
-				/*
-				 * remember: we use '@XmlAttribute' right above the attribute 'id' since we'd
-				 * like to receive him like that on your response body one time 'id' comes
-				 * inside <user> in the regarding xml code.
-				 */
-				.extract().body().as(User.class);
-
-		Assert.assertNotNull(createdUser);
-		Assert.assertNotNull(createdUser.getId());
-		Assert.assertEquals(createdUser.getName(), "Usuario Desserializado");
-		Assert.assertEquals(createdUser.getAge(), new Integer(19));
-		Assert.assertEquals(createdUser.getSalary(), new Float(2400.00f));
+			.statusCode(HttpStatus.SC_CREATED)
+			/*
+			 * remember: we use '@XmlAttribute' right above the attribute 'id' since we'd
+			 * like to receive him like that on your response body one time 'id' comes
+			 * inside <user> in the regarding xml code.
+			 */
+			.extract().body().as(User.class);
+	
+	Assert.assertNotNull(createdUser);
+	Assert.assertNotNull(createdUser.getId());
+	Assert.assertEquals(createdUser.getName(), "Usuario Desserializado");
+	Assert.assertEquals(createdUser.getAge(), new Integer(19));
+	Assert.assertEquals(createdUser.getSalary(), new Float(2400.00f));
 	
 	//  The underlying commented code snippets will work as well:
 	//	
@@ -198,6 +197,7 @@ public class Serialization {
 	// in some ModelObject is equal to the simple type received value.
 	//
 	// --> Not the best way to assert incoming values, either.
-		;
-	}
+	;
+}
+
 }
