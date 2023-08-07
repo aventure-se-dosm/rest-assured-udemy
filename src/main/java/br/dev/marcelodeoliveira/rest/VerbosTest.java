@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -87,8 +88,18 @@ public class VerbosTest {
 	@Test
 	public void deveSalvarUmUsuarioJsonUsandoMap() {
 		
+		/**
+		 * [1] Dependência para serialização: GSON
+		 * 
+		 * [2] Exceção por ausência:
+		 * java.lang.IllegalStateException: Cannot serialize object because no JSON
+		 * serializer found in classpath. Please put either Jackson (Databind) or Gson
+		 * in the classpath.
+		 * 
+		 */
+		
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("name", "José Mapper");
+		params.put("name", "Maria Mapper");
 		params.put("age", 29);
 		given().log().all()
 			.contentType(ContentType.JSON)
@@ -100,6 +111,34 @@ public class VerbosTest {
 		.body("name", is("José Mapper"))
 		.body("age", greaterThan(new Integer(0)))
 		.body("age", is(29))
+		;
+	}
+	@Test //@Ignore
+	public void deveSalvarUmUsuarioXMLUsandoMap() {
+
+		/*
+		 * [1]Dependência de serialização: (A investigar)
+		 *
+		 * [2] Exceção por ausência javax.xml.bind.MarshalException - with linked
+		 * exception: [com.sun.istack.SAXException2: não é possível fazer marshalling do
+		 * tipo "java.util.HashMap" como um elemento porque ele não foi encontrado em
+		 * uma anotação @XmlRootElement]
+		 * 
+		 */
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "Maria Mapper");
+		params.put("age", 29);
+		given().log().all()
+		.contentType(ContentType.XML)
+		.body(params)
+		.when()
+		.post(getUsersEndpoint())
+		.then().log().all().assertThat()
+		.body("id", is(notNullValue()))
+		.body("name", is("Maria Mapper"))
+		//.body("age", greaterThan(new Integer(0)))
+		.body("age", is("29"))
 		;
 	}
 	@Test 
