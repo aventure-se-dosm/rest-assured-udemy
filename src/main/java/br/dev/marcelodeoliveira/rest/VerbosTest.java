@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.protocol.HTTP;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -139,6 +141,23 @@ public class VerbosTest {
 		.body("age", greaterThan(new Integer(0)))
 		.body("age", is(29))
 		.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()))
+		;
+	}
+	@Test
+	public void deveDesserializarumModelObjectAoSalvarUmUsuario() {
+
+		
+		User user = new User("Usuario Desserializado", 29, 3504.00F);
+		given().log().all()
+		.contentType(ContentType.JSON)
+		.body(user)
+		.when()
+		.post(getUsersEndpoint())
+		.then().log().all().statusCode(HttpStatus.SC_CREATED)
+		.extract().body().as(User.class);
+		
+		Assert.assertNotNull(user);
+		Assert.assertEquals(user.getName(), "Usuario Desserializado");
 		;
 	}
 	@Test @Ignore
