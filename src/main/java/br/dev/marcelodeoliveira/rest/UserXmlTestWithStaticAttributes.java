@@ -56,9 +56,6 @@ public class UserXmlTestWithStaticAttributes {
 		RestAssured.responseSpecification = resSpec;
 	}
 
-	private String getUserUrlById(Integer index) {
-		return (getUsersUrl() + "/" + index);
-	}
 
 	private String getUsersUrl() {
 		return RESOURCE_USERS_XML;

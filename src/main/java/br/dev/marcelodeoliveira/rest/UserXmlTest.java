@@ -14,11 +14,10 @@ import java.util.ArrayList;
 import org.apache.http.HttpStatus;
 import org.hamcrest.xml.HasXPath;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
 import io.restassured.internal.path.xml.NodeImpl;
 //import io.restassured.specification.RequestSpecification;
 

@@ -102,8 +102,6 @@ public class HTML {
 		.body(hasXPath("//tr[4]/td[1]", is("3")))
 		.body(hasXPath("//tr[4]/td[2]", is("Ana Júlia")))
 		.body(hasXPath("//tr[4]/td[3]", is("20")))
-		
-//			.body("html.body.div.table.tbody.tr[1].td[2]", is(30)) //it doesn't work: String value 
 		;
 		
 	}

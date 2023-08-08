@@ -11,12 +11,9 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
-
 
 public class VerbosTest {
 	
-	private final Float MINIMUM_SALARY = 1320.00F;
 	private final  String URL_BASE = "https://restapi.wcaquino.me";
 	private final  String URL_RESOURCE_USERS = "/users";
 	private final String URL_RESOURCE_USERSXML = "/usersXML";
@@ -45,13 +42,6 @@ public class VerbosTest {
 		return getUrlBase() + getUsersXMLResource();
 	}
 
-	private void someSwitchByVerb(Method method) {
-		//TODO: any method which some arg is supposded to be a REST verb enum.
-		// look at this as a template.
-	}
-	
-	//na verdade precisamos gerar uma DTO
-	//na arquitetura maior
 	private String getUserJson(String name, Integer age) {
 
 		//it works: oneline simplest Hard-coded json

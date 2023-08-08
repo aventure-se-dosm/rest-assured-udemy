@@ -2,8 +2,6 @@ package br.dev.marcelodeoliveira.rest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
@@ -78,7 +76,7 @@ public class UserJsonTest {
 				is("Usuário inexistente"));
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Test
 	public void deveVerificarListaRaiz() {
 		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).body("$", hasSize(3))

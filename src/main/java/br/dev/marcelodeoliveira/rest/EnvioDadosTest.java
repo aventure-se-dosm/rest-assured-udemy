@@ -4,11 +4,9 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 
 import java.net.URI;
-import java.nio.charset.CharsetEncoder;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
-
 import io.restassured.http.ContentType;
 
 public class EnvioDadosTest {
