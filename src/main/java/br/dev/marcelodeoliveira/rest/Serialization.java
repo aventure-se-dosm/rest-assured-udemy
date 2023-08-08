@@ -1,8 +1,7 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
-import static io.restassured.config.DecoderConfig.decoderConfig;
+import static io.restassured.config.EncoderConfig.encoderConfig;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -13,11 +12,11 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import br.dev.marcelodeoliveira.rest.model.User;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 //anotações para des-/serialização com XML
@@ -29,10 +28,10 @@ public class Serialization {
 	private final String URL_RESOURCE_USERS = "/users";
 	private final String URL_RESOURCE_USERSXML = "/usersXML";
 
-	@BeforeClass
-	public static void setupTest() {
-		config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
-	}
+//	@BeforeClass
+//	public static void setupTest() {
+//		config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
+//	}
 
 	private String getUsersResource() {
 		return this.URL_RESOURCE_USERS;
@@ -154,14 +153,25 @@ public class Serialization {
 
 		/*
 		 * If is there any encoding issue then this single test will actually fail, and
-		 * further sollution should be sought.
+		 * further solution should be sought.
 		 */
 		// config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
 
 		User user = new User("Usuário Desserializado", new Integer(40), 2500.00f);
-		given().log().all().contentType(ContentType.XML).body(user).when().post(getUsersXMLEndpoint()).then().log()
-				.all().assertThat().statusCode(201).body("user.@id", is(notNullValue()))
-				.body("user.name", is("Usuário Desserializado")).body("user.age", is("40"));
+		
+		given().log().all()
+		.config(RestAssured.config().encoderConfig(encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(true)))
+		//.config(config().encoderConfig(encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(true)))
+		.contentType(ContentType.XML)
+			.body(user)
+			.when()
+				.post(getUsersXMLEndpoint())
+			.then().log().all()
+			.assertThat()
+			.statusCode(201)
+			.body("user.@id", is(notNullValue()))
+			.body("user.name", is("Usuário Desserializado"))
+			.body("user.age", is("40"));
 	}
 
 @Test

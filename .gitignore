@@ -3,7 +3,10 @@
 *.bin
 *.class
 *.path
+*.classpath
+.settings
 
 
 ./target/
 ./target/*
+/target/

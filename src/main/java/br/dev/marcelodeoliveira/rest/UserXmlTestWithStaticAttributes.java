@@ -44,6 +44,7 @@ public class UserXmlTestWithStaticAttributes {
 		RestAssured.baseURI = "https://restapi.wcaquino.me";
 		RestAssured.basePath = "/usersXML/";
 
+		
 		RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 		reqBuilder.log(LogDetail.ALL).build();
 		
