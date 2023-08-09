@@ -1,6 +1,6 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.lessThan;
 
 import java.io.File;
@@ -15,32 +15,24 @@ import org.junit.Test;
 
 public class FileTest {
 
-	//usar basePath... seria melhor, não?
-	private final static String baseUri = "http://wcaquino.me/";
-	private final String basePathFileUpload = "upload/";
-	private final String basePathFileDownload = "download";
+	//private final String baseUri = "http://restapi.wcaquino.me/";
+	private final String basePathFileUpload = "http://restapi.wcaquino.me/upload/";
+	private final String basePathFileDownload = "http://restapi.wcaquino.me/download/";
 	
-//	private final String UrlFileUpload = "upload";
 	private final String pathUploadedFile = "src/main/resources/users.pdf";
 	private final String PathTooMuchLargeUploadedFile = "src/main/resources/chromedriver_win32_111.zip";
 	
-	@Before
-	public  void setBasePath(){
-		given().baseUri(baseUri);
-	}
-
 	@Test
 	public void deveObrigarEnvioArquivo() {
 		given().log().all()
-			//.contentType("multipart/form-data") --> optional
+			.contentType("multipart/form-data") //--> optional
 		.when()
-		.basePath(basePathFileUpload)
-			.post(baseUri)
+			.post(basePathFileUpload)
 		.then().log().all()
 			.statusCode(HttpStatus.SC_NOT_FOUND);
 	}
 
-	@Test
+	@Test 
 	public void deveFazerEnvioDeArquivo() {
 		//.contentType("multipart/form-data") --> optional
 		
@@ -121,8 +113,8 @@ public class FileTest {
 		// Overwriting is suppose to happen if append is set 'true', rather.
 		// IO, FileNotFound, and such expected exceptions could still happen so.
 		OutputStream imgStream = new FileOutputStream(imgFile, false);
-		imgStream.close();
 		imgStream.write(imgByteArray);
+		imgStream.close();
 		
 		//TODO: pertinent Assertions
 	}
