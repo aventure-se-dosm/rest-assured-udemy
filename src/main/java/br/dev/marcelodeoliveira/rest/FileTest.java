@@ -10,29 +10,32 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.http.HttpStatus;
+import org.junit.Before;
 import org.junit.Test;
 
 public class FileTest {
 
+	//usar basePath... seria melhor, não?
+	private final static String baseUri = "http://wcaquino.me/";
+	private final String basePathFileUpload = "upload/";
+	private final String basePathFileDownload = "download";
 	
-	
-	
-	//usar basepath... seria melhor, não?
-	
-	private final String UrlFileUpload = "https://restapi.wcaquino.me/upload";
-	private final String PathUploadedFile = "src/main/resources/users.pdf";
+//	private final String UrlFileUpload = "upload";
+	private final String pathUploadedFile = "src/main/resources/users.pdf";
 	private final String PathTooMuchLargeUploadedFile = "src/main/resources/chromedriver_win32_111.zip";
-	private final String UrlFileDownload = "https://restapi.wcaquino.me/download";
-//	private final String UrlFileUpload = "https://restapi.wcaquino.me/upload";
-//	private final String PathUploadedFile = "src/main/resources/users.pdf";
-//	private final String PathTooMuchLargeUploadedFile = "src/main/resources/chromedriver_win32_111.zip";
+	
+	@Before
+	public  void setBasePath(){
+		given().baseUri(baseUri);
+	}
 
 	@Test
 	public void deveObrigarEnvioArquivo() {
 		given().log().all()
 			//.contentType("multipart/form-data") --> optional
 		.when()
-			.post(UrlFileUpload)
+		.basePath(basePathFileUpload)
+			.post(baseUri)
 		.then().log().all()
 			.statusCode(HttpStatus.SC_NOT_FOUND);
 	}
@@ -45,9 +48,9 @@ public class FileTest {
 		//	"arquivo" is set for this endpoint, standing for files to upload
 		// which Content-type is 'multipart/form-data'
 		given().log().all()
-			.multiPart("arquivo", new File(PathUploadedFile))
+			.multiPart("arquivo", new File(pathUploadedFile))
 		.when()
-			.post(UrlFileUpload)
+			.post(basePathFileUpload)
 		.then().log().all()
 				.statusCode(HttpStatus.SC_OK);
 	}
@@ -57,7 +60,7 @@ public class FileTest {
 		given().log().all()
 			.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
 		.when()
-			.post(UrlFileUpload)
+			.post(basePathFileUpload)
 		.then().log().all()
 			.statusCode(HttpStatus.SC_REQUEST_TOO_LONG);
 	}
@@ -65,36 +68,16 @@ public class FileTest {
 	@Test
 	public void naoDeveFazerUploadDeArquivoTimeoutException() {
 		given().log().all()
-		.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
+			.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
 		.when()
-		.post(UrlFileUpload)
+			.post(basePathFileUpload)
 		.then().log().all()
-		.time(lessThan(10000L))
-		.statusCode(HttpStatus.SC_REQUEST_TOO_LONG);
+			.time(lessThan(10000L))
+			.statusCode(HttpStatus.SC_REQUEST_TOO_LONG);
 	}
+	
 	@Test
-	public void DeveFazerDownloadDeArquivoDeImagem() throws IOException {
-		
-		String pathDestination = "src/main/resources/imagem.jpg";
-		
-		//  No subfolder could be created if not existent
-		//	String pathDestination = "src/main/resources/downloads/imagem.jpg";
-		
-		byte[] imgByteArray = given().log().all()
-		.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
-		.when()
-			.get(UrlFileDownload)
-		.then()
-		.statusCode(HttpStatus.SC_REQUEST_TOO_LONG)
-		.extract().asByteArray();
-		
-		OutputStream imgStream = new FileOutputStream(new File(pathDestination));
-		imgStream.write(imgByteArray);
-		imgStream.close();
-		
-	}
-	@Test
-	public void DeveFazerDownloadDeArquivoDeImagemSeDiretorioNaoExiste() throws IOException {
+	public void DeveFazerDownloadDeArquivoDeImagem() throws IOException, FileNotFoundException {
 		
 		String pathDestination = "src/main/resources/imagem.jpg";
 		
@@ -103,9 +86,30 @@ public class FileTest {
 		
 		byte[] imgByteArray = given().log().all()
 				.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
-				.when()
-				.get(UrlFileDownload)
-				.then()
+		.when()
+			.get(basePathFileDownload)
+		.then()
+			.statusCode(HttpStatus.SC_REQUEST_TOO_LONG)
+			.extract().asByteArray();
+			
+		OutputStream imgStream = new FileOutputStream(new File(pathDestination));
+			imgStream.write(imgByteArray);
+			imgStream.close();
+			//TODO: pertinent Assertions
+	}
+	
+	@Test
+	public void DeveFazerDownloadDeArquivoDeImagemSeDiretorioNaoExiste() throws IOException, FileNotFoundException {
+		
+		String pathDestination = "src/main/resources/imagem.jpg";
+		
+		//  No subfolder could be created if not existent
+		//	String pathDestination = "src/main/resources/downloads/imagem.jpg";		
+		byte[] imgByteArray = given().log().all()
+				.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
+			.when()
+				.get(basePathFileDownload)
+			.then()
 				.statusCode(HttpStatus.SC_REQUEST_TOO_LONG)
 				.extract().asByteArray();
 		
@@ -117,10 +121,10 @@ public class FileTest {
 		// Overwriting is suppose to happen if append is set 'true', rather.
 		// IO, FileNotFound, and such expected exceptions could still happen so.
 		OutputStream imgStream = new FileOutputStream(imgFile, false);
-		imgStream.write(imgByteArray);
 		imgStream.close();
+		imgStream.write(imgByteArray);
 		
+		//TODO: pertinent Assertions
 	}
-	
 	
 }
