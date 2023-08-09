@@ -25,7 +25,7 @@ public class FileTest {
 	}
 
 	@Test
-	public void deveFazerEeArquivo() {
+	public void deveFazerEnvioDeArquivo() {
 		//.contentType("multipart/form-data") --> optional
 		
 		//	'Content-type' has an attribute called name.
