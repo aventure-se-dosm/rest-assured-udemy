@@ -1,6 +1,7 @@
 package br.dev.marcelodeoliveira.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 
@@ -13,6 +14,7 @@ public class FileTest {
 
 	private final String UrlFileUpload = "https://restapi.wcaquino.me/upload";
 	private final String PathUploadedFile = "src/main/resources/users.pdf";
+	private final String PathTooMuchLargeUploadedFile = "src/main/resources/chromedriver_win32_111.zip";
 
 	@Test
 	public void deveObrigarEnvioArquivo() {
@@ -37,5 +39,37 @@ public class FileTest {
 			.post(UrlFileUpload)
 		.then().log().all()
 				.statusCode(HttpStatus.SC_OK);
+	}
+	
+	@Test
+	public void naoDeveFazerUploadDeArquivoMuitoGrande() {
+		given().log().all()
+		//.contentType("multipart/form-data") --> optional
+		
+		//	'Content-type' has an attribute called name.
+		//	"arquivo" is set for this endpoint, standing for files to upload
+		// which Content-type is 'multipart/form-data'
+		.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
+		.when()
+		.post(UrlFileUpload)
+		.then().log().all()
+		.statusCode(HttpStatus.SC_REQUEST_TOO_LONG);
+	}
+
+	@Test
+	public void DeveFazerUploadDeArquivoTimeoutException() {
+		given().log().all()
+		//.contentType("multipart/form-data") --> optional
+		
+		//	'Content-type' has an attribute called name.
+		//	"arquivo" is set for this endpoint, standing for files to upload
+		// which Content-type is 'multipart/form-data'
+		.multiPart("arquivo", new File(PathTooMuchLargeUploadedFile))
+		
+		.when()
+		.post(UrlFileUpload)
+		.then().log().all()
+		.time(lessThan(10000L))
+		.statusCode(HttpStatus.SC_REQUEST_TOO_LONG);
 	}
 }
