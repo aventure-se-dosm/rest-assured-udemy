@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.http.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
 
 public class FileTest {
