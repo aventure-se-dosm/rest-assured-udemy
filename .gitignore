@@ -5,6 +5,10 @@
 *.path
 *.classpath
 .settings
+.bin
+.class
+.path
+.classpath
 
 
 ./target/

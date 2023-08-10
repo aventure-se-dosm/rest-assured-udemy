@@ -1,0 +1,41 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="age" type="xs:byte"/>
+  <xs:element name="salary" type="xs:float"/>
+  <xs:element name="rua" type="xs:string"/>
+  <xs:element name="numero" type="xs:byte"/>
+  <xs:element name="endereco">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rua"/>
+        <xs:element ref="numero"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filhos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="user">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="age"/>
+        <xs:element ref="salary" minOccurs="0"/>
+        <xs:element ref="endereco" minOccurs="0"/>
+        <xs:element ref="filhos" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="id" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="users">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="user" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

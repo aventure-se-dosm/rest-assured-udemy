@@ -14,20 +14,16 @@ import java.util.ArrayList;
 import org.apache.http.HttpStatus;
 import org.hamcrest.xml.HasXPath;
 import org.junit.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
 import io.restassured.internal.path.xml.NodeImpl;
-//import io.restassured.specification.RequestSpecification;
 
 public class UserXmlTest {
 
-//	private static final Float MINIMUM_MONTHLY_REMUNERATION = 1320.00F;
 	private String REQUEST_USER_INSECURE = "http://restapi.wcaquino.me/usersXML";
 	private String REQUEST_USER_SECURE = "https://restapi.wcaquino.me/usersXML";
 	private boolean secure = true;
-
 
 	private String getUserUrlById(Integer index) {
 		return getUsersUrl() + "/" + index;
@@ -41,7 +37,6 @@ public class UserXmlTest {
 	private boolean isSecure() {
 		return this.secure;
 	}
-	
 
 	@Test
 	public void devoTrabalharComXml() {
@@ -59,7 +54,8 @@ public class UserXmlTest {
 	@Test
 	public void devoTrabalharComXmlNaRaiz() {
 		given().when().get(getUserUrlById(3)).then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
-				// avoids the root's name (user) be always needed in path's string expected: text
+				// avoids the root's name (user) be always needed in path's string expected:
+				// text
 				.body("name", is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))).body("filhos.size()", is(1))
 				.body("filhos.name.size()", is(2))
 
