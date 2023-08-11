@@ -140,11 +140,16 @@ public class Serialization {
 		 */
 
 		User user = new User("Usuario Desserializado", new Integer(40), 2500.00f);
-		given().log().all().contentType(ContentType.XML).body(user).when().post(getUsersXMLEndpoint()).then().log()
-				.all()
-				// .assertThat()
-				.statusCode(201).body("user.@id", is(notNullValue())).body("user.name", is("Usuario Desserializado"))
-				.body("user.age", is("40"));
+		given().log().all()
+			.contentType(ContentType.XML)
+			.body(user)
+		.when()
+			.post(getUsersXMLEndpoint())
+		.then().log().all()
+			 .assertThat()
+			.statusCode(201).body("user.@id", is(notNullValue()))
+			.body("user.name", is("Usuario Desserializado"))
+			.body("user.age", is("40"));
 	}
 
 	@Test
