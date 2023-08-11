@@ -113,11 +113,9 @@ public class EnvioDadosTest {
 	
 	
 	private String getUsersXMLEndpoint() {
-		// TODO Auto-generated method stub
-		return "https://restapi.wcaquino.me/v2/users";
+				return "https://restapi.wcaquino.me/v2/users";
 	}
 	private URI getUsersXMLEndpoint(String parameter, String value) {
-		// TODO Auto-generated method stub
-		return URI.create(getUsersXMLEndpoint().concat(getParamEqualsToValueString(parameter, value)));
+				return URI.create(getUsersXMLEndpoint().concat(getParamEqualsToValueString(parameter, value)));
 	}
 }

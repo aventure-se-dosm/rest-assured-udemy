@@ -27,8 +27,7 @@ public class VerbosTest {
 	}
 	
 	private String getUsersXMLResource() {
-		// TODO Auto-generated method stub
-		return this.URL_RESOURCE_USERSXML;
+				return this.URL_RESOURCE_USERSXML;
 	}
 	
 	private String getUsersEndpoint() {
@@ -104,13 +103,11 @@ public class VerbosTest {
 	}
 	
 	private String getUsersResource(Integer index) {
-		// TODO Auto-generated method stub
-		return String.format("%s%s/%s", getUrlBase(), getUsersResource(), index);
+				return String.format("%s%s/%s", getUrlBase(), getUsersResource(), index);
 	}
 
 	private String getUserXML(String name, int age) {
-		// TODO Auto-generated method stub
-		return "<user>"
+				return "<user>"
 				+ String.format("<name>%s</name>", name)
 				+ String.format("<age>%d</age>", age)
 			+"</user>";

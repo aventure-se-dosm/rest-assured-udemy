@@ -22,7 +22,6 @@ public class AuthTest {
 	private final String openWeatherMapApiUrl = "api.openweathermap.org/data/2.5/weather";
 	private final String wcAquinoRestApiUrl = "restapi.wcaquino.me";
 	private final String barrigaRestApiUrl = "barrigarest.wcaquino.me";
-	private final String seuBarrigaRestApiUrl = "seubarriga.wcaquino.me";
 	private String secureHttpProtocol = "https://";
 	private String notSecureHttpProtocol = "http://";
 
@@ -30,15 +29,6 @@ public class AuthTest {
 
 	private boolean isSecure() {
 		return isSecure;
-	}
-
-	private void setSecure() {
-		isSecure = true;
-		;
-	}
-
-	private void setUnsecure() {
-		isSecure = false;
 	}
 
 	private String getPartialQuery() {
@@ -51,14 +41,6 @@ public class AuthTest {
 
 	private String getBarrigarestApiUrl(String resource) {
 		return notSecureHttpProtocol + barrigaRestApiUrl + resource;
-	}
-
-	private String getBarrigarestApiUrl() {
-		return getBarrigarestApiUrl("");
-	}
-
-	private String getSeuBarrigaApiUrl() {
-		return getProcol() + seuBarrigaRestApiUrl;
 	}
 
 	private String getOpenWeatherMap() {
@@ -96,7 +78,6 @@ public class AuthTest {
 	}
 
 	private String getStarWarsApiUrl() {
-		// TODO Auto-generated method stub
 		return getProcol() + starWarsApiUrl;
 	}
 
@@ -165,13 +146,8 @@ public class AuthTest {
 		String username = "admin";
 		String password = "senha";
 
-		given().log().all()
-			.auth().basic(username, password).
-		when()
-			.get(getWcAquinoRestApi() + "/basicauth")
-		.then().log().all().
-			assertThat().statusCode(HttpStatus.SC_OK)
-			.body("status", is("logado"));
+		given().log().all().auth().basic(username, password).when().get(getWcAquinoRestApi() + "/basicauth").then()
+				.log().all().assertThat().statusCode(HttpStatus.SC_OK).body("status", is("logado"));
 	}
 
 	public String getSeuBarrigaLoginJWT() {
@@ -180,27 +156,19 @@ public class AuthTest {
 		login.put("email", "automation.dvmrkolv@gmail.com");
 		login.put("senha", "wXY2AUQXYy3gbeq");
 
-		return given().log().all()
-				.body(login)
-				.contentType(ContentType.JSON)
-			.when()
-				.post(getBarrigarestApiUrl("/signin"))
-			.then().log().all().extract().path("token").toString();
+		return given().log().all().body(login).contentType(ContentType.JSON).when()
+				.post(getBarrigarestApiUrl("/signin")).then().log().all().extract().path("token").toString();
 	}
-	
 
 	@Test
 	public void deveFazerAutenticacaoComJwt() {
 		// String token = getSeuBarrigaLoginJWT();
 
-		given().log().all()
-			.contentType(ContentType.JSON)
-			.header("Authorization",  String.join(" ", "JWT", getSeuBarrigaLoginJWT()))
-			.when()
-				.get(getBarrigarestApiUrl("/contas"))
-			.then().log().all().assertThat()
-				.statusCode(HttpStatus.SC_OK).body("nome", hasItems("Conta de Teste Jwt"));
-			;
+		given().log().all().contentType(ContentType.JSON)
+				.header("Authorization", String.join(" ", "JWT", getSeuBarrigaLoginJWT())).when()
+				.get(getBarrigarestApiUrl("/contas")).then().log().all().assertThat().statusCode(HttpStatus.SC_OK)
+				.body("nome", hasItems("Conta de Teste Jwt"));
+		;
 	}
 
 	@Test
