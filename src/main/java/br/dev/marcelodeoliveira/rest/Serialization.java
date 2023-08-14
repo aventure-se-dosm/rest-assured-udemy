@@ -9,10 +9,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import br.dev.marcelodeoliveira.rest.model.User;
@@ -141,7 +141,7 @@ public class Serialization {
 
 		User user = new User("Usuario Desserializado", new Integer(40), 2500.00f);
 		given().log().all()
-			.contentType(ContentType.XML)
+			.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 			.body(user)
 		.when()
 			.post(getUsersXMLEndpoint())
@@ -153,21 +153,12 @@ public class Serialization {
 	}
 
 	@Test
-	@Ignore
 	public void deveSalvarUmUsuarioXMLUsandoModelObjectComUTF8() {
-
-		/*
-		 * If is there any encoding issue then this single test will actually fail, and
-		 * further solution should be sought.
-		 */
-		// config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
-
 		User user = new User("Usuário Desserializado", new Integer(40), 2500.00f);
 		
 		given().log().all()
 		.config(RestAssured.config().encoderConfig(encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(true)))
-		//.config(config().encoderConfig(encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(true)))
-		.contentType(ContentType.XML)
+		.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 			.body(user)
 			.when()
 				.post(getUsersXMLEndpoint())
@@ -185,7 +176,7 @@ public void deveDesserializarUmModelObjectAoSalvarUmUsuario() {
 	User createdUser =
 			
 			given().log().all()
-			.contentType(ContentType.XML)
+			.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 			.body(new User("Usuario Desserializado", 19, 2400.00F))
 			.when()
 			.post(getUsersXMLEndpoint())
