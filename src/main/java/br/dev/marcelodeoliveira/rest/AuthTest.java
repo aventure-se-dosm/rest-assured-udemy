@@ -23,7 +23,6 @@ public class AuthTest {
 	private final String openWeatherMapApiUrl = "https://api.openweathermap.org/data/2.5/weather";
 	private final String wcAquinoRestApiUrl = "https://restapi.wcaquino.me";
 	private final String barrigaRestApiUrl = "http://barrigarest.wcaquino.me";
-	private final String SeuNarrigaRestApiUrl = "https://seubarriga.wcaquino.me";
 	private String secureHttpProtocol = "https://";
 	private String notSecureHttpProtocol = "http://";
 
@@ -129,15 +128,11 @@ public class AuthTest {
 
 	@Test
 	public void deveFazerAutenticacaoBasica1() {
-
-		String username = "admin";
-		String password = "senha";
-
-		given().log().all().when()
-				// same as 
-				.get("https://admin:senha@restapi.wcaquino.me/basicauth")
-				.then().log().all().assertThat()
-				.body("status", is("logado")).statusCode(HttpStatus.SC_OK);
+		given().log().all()
+		.when()
+			.get("https://admin:senha@restapi.wcaquino.me/basicauth")
+		.then().log().all().assertThat()
+		.body("status", is("logado")).statusCode(HttpStatus.SC_OK);
 	}
 
 
@@ -211,6 +206,7 @@ public class AuthTest {
 		.extract().path(firstAccountXMLPathLocation)	
 		;
 	}
+	
 	@Test
 	public void deveAcessarAplicacaoWebExtraindoStringXmlPath() {
 		//seubarriga
@@ -238,11 +234,8 @@ public class AuthTest {
 				//.extract().path(firstAccountXMLPathLocation)	
 				.extract().body().asString()	
 				;
-		
 		XmlPath xmlcontaPathPath = new XmlPath(CompatibilityMode.HTML, body);
 		System.out.println(xmlcontaPathPath.getString(firstAccountXMLPathLocation));
-		
-		
 	}
 	
 	private String getCookieValue(String cookie) {
