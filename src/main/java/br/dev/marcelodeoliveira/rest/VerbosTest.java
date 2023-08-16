@@ -6,8 +6,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
@@ -27,8 +29,7 @@ public class VerbosTest {
 	}
 	
 	private String getUsersXMLResource() {
-		// TODO Auto-generated method stub
-		return this.URL_RESOURCE_USERSXML;
+				return this.URL_RESOURCE_USERSXML;
 	}
 	
 	private String getUsersEndpoint() {
@@ -57,10 +58,17 @@ public class VerbosTest {
 		return body;
 	}
 	
+	@BeforeClass
+	public static void setUTF8Encoding()
+	{
+		given().log().all()
+		.contentType("application/XML; charset=utf-8");
+	}
+	
 	@Test
 	public void deveSalvarUmUsuarioJson() {
 		given().log().all()
-			.contentType(ContentType.JSON)
+			.contentType(ContentType.JSON.withCharset("UTF-8"))
 			.body(getUserJson("José", 50))
 		.when()
 			.post(getUsersEndpoint())
@@ -74,17 +82,13 @@ public class VerbosTest {
 	@Test 
 	public void deveSalvarUmUsuarioXML() {
 		given().log().all()
-		.contentType(ContentType.XML)
-		.body(getUserXML("Jose", 50))
+		.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
+		.body(getUserXML("José", 50))
 		.when()
 		.post(getUsersXMLEndpoint())
 		.then().log().all().assertThat()
 		.body("user.@id", is(notNullValue()))
-		.body("user.name", is("Jose")) //we have faced issues with encoding
-		//when we use utf-8 belonged chars, such as in 'José'.
-		
-		//.body("user.age", greaterThan(new Integer(0)))
-		//.body("age", is(50)) //it doesn't work: xlm numeric values will be send as String	
+		.body("user.name", is("José")) //we have faced issues with encoding
 		.body("user.age", is("50"))
 		;
 	}
@@ -104,13 +108,11 @@ public class VerbosTest {
 	}
 	
 	private String getUsersResource(Integer index) {
-		// TODO Auto-generated method stub
-		return String.format("%s%s/%s", getUrlBase(), getUsersResource(), index);
+				return String.format("%s%s/%s", getUrlBase(), getUsersResource(), index);
 	}
 
 	private String getUserXML(String name, int age) {
-		// TODO Auto-generated method stub
-		return "<user>"
+				return "<user>"
 				+ String.format("<name>%s</name>", name)
 				+ String.format("<age>%d</age>", age)
 			+"</user>";
@@ -134,7 +136,7 @@ public class VerbosTest {
 	@Test
 	public void naoDeveSalvarUmUsuarioSemNome() {
 		given().log().all()
-			.contentType(ContentType.XML)
+			.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 			.body("{\"age\": 50}") //it fails, no setup for attribute "name".
 		.when()
 			.post(

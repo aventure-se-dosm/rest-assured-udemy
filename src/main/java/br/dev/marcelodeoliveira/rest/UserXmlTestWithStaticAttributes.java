@@ -99,15 +99,6 @@ public class UserXmlTestWithStaticAttributes {
 		Assert.assertTrue(names.get(1).toString().equalsIgnoreCase("Ana JULIA"));
 	}
 
-	@Test
-	@Ignore
-	public void devoFazerPesquisasAvancadasComXMLRequestSpecificationEJava() {
-
-		// RequestSpecification names =
-		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).extract()
-				.path("users.user.name.findAll{it.toString().contains('n')}");
-		// TODO: Assertions using <<RequestSpecification>> name worthly!
-	}
 
 	@Test
 	public void devoFazerPesquisasAvancadasComXPath() {

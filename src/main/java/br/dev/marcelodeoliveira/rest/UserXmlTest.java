@@ -1,14 +1,7 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasXPath;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 import java.util.ArrayList;
 
 import org.apache.http.HttpStatus;
@@ -80,20 +73,13 @@ public class UserXmlTest {
 		Assert.assertTrue(names.get(1).toString().equalsIgnoreCase("Ana JULIA"));
 	}
 
-	@Test
-	@Ignore
-	public void devoFazerPesquisasAvancadasComXMLRequestSpecificationEJava() {
-
-		// RequestSpecification names =
-		given().when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).extract()
-				.path("users.user.name.findAll{it.toString().contains('n')}");
-
-		// TODO: Assertions using <<RequestSpecification>> name worthly!
-	}
 
 	@Test
 	public void devoFazerPesquisasAvancadasComXPath() {
-		given().when().get("https://restapi.wcaquino.me/usersXML").then()// .assertThat()
+		given()
+		.log().all()
+		.when().get("https://restapi.wcaquino.me/usersXML")
+		.then().log().all()// .assertThat()
 				.statusCode(HttpStatus.SC_OK).body(hasXPath("count(/users/user)", is("3")))
 				.body(hasXPath("count(/users/user)", is(not("2"))))
 

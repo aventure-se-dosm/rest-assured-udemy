@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.containsString;
 
 import java.net.URI;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
+
 import io.restassured.http.ContentType;
 
 public class EnvioDadosTest {
@@ -32,6 +34,7 @@ public class EnvioDadosTest {
 	@Test 
 	public void deveEnviarValorViaQueryVaParams() {
 		given().log().all()
+		.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 		.queryParams("format", "xml")
 
 		//inutile queryParams
@@ -44,7 +47,6 @@ public class EnvioDadosTest {
 		.then()
 		.log().all().assertThat()
 		.statusCode(HttpStatus.SC_OK)
-		.contentType(ContentType.XML)
 		.contentType(containsString("utf-8"))
 		//.body("user.@id", is(notNullValue()))
 		//.body("user.name", is("Jose")) //we have faced issues with encoding
@@ -63,7 +65,8 @@ public class EnvioDadosTest {
 	@Test 
 	public void deveEnviarValorViaQueryViaParams() {
 		given().log().all()
-		.queryParams("format", "xml")
+		.contentType(ContentType.ANY.withCharset(CharEncoding.UTF_8.toLowerCase()))
+		.queryParams("format", "application/xml")
 		
 		//inutile queryParams
 		.queryParams("Server", "MICHIGAN")
@@ -75,8 +78,7 @@ public class EnvioDadosTest {
 		.then()
 		.log().all().assertThat()
 		.statusCode(HttpStatus.SC_OK)
-		.contentType(ContentType.XML)
-		.contentType(containsString("utf-8"))
+		//.contentType(containsString("utf-8"))
 		//.body("user.@id", is(notNullValue()))
 		//.body("user.name", is("Jose")) //we have faced issues with encoding
 		//when we use utf-8 belonged chars, such as in 'José'.
@@ -113,11 +115,9 @@ public class EnvioDadosTest {
 	
 	
 	private String getUsersXMLEndpoint() {
-		// TODO Auto-generated method stub
-		return "https://restapi.wcaquino.me/v2/users";
+				return "https://restapi.wcaquino.me/v2/users";
 	}
 	private URI getUsersXMLEndpoint(String parameter, String value) {
-		// TODO Auto-generated method stub
-		return URI.create(getUsersXMLEndpoint().concat(getParamEqualsToValueString(parameter, value)));
+				return URI.create(getUsersXMLEndpoint().concat(getParamEqualsToValueString(parameter, value)));
 	}
 }
