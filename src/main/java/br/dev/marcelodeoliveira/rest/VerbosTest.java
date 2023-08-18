@@ -73,6 +73,7 @@ public class VerbosTest {
 		.when()
 			.post(getUsersEndpoint())
 		.then().log().all().assertThat()
+			.statusCode(HttpStatus.SC_CREATED)
 			.body("id", is(notNullValue()))
 			.body("name", is("José"))
 			.body("age", greaterThan(new Integer(0)))

@@ -40,7 +40,8 @@ public class UserXmlTest {
 
 				// forma esdr�xula, mas possível
 				.body("user.filhos", hasItems("ZezinhoLuizinho"))
-				.body("user.filhos.name", hasItems("Zezinho", "Luizinho")).body("user.filhos.name", hasItem("Zezinho"))
+				.body("user.filhos.name", hasItems("Zezinho", "Luizinho"))
+				.body("user.filhos.name", hasItem("Zezinho"))
 				.body("user.filhos.name[0]", is("Zezinho")).body("user.filhos.name[1]", is("Luizinho"));
 	}
 
@@ -49,15 +50,19 @@ public class UserXmlTest {
 		given().when().get(getUserUrlById(3)).then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
 				// avoids the root's name (user) be always needed in path's string expected:
 				// text
-				.body("name", is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3))).body("filhos.size()", is(1))
+				.body("name", is("Ana Julia"))
+				.body("@id", is("3"))
+				.body("@id", not(is(3))).body("filhos.size()", is(1))
 				.body("filhos.name.size()", is(2))
 
 				// forma esdr�xula, mas possível
 				.body("filhos", hasItems("ZezinhoLuizinho"))
 
 				// redefinindo a raiz para 'user.filhos':
-				.rootPath("user.filhos").body("size()", is(1)).body("name.size()", is(2))
-				.body("name", hasItems("Zezinho", "Luizinho")).body("name", hasItem("Zezinho"))
+				.rootPath("user.filhos").body("size()", is(1))
+				.body("name.size()", is(2))
+				.body("name", hasItems("Zezinho", "Luizinho"))
+				.body("name", hasItem("Zezinho"))
 				.body("name[0]", is("Zezinho")).body("name[1]", is("Luizinho"));
 	}
 
@@ -66,7 +71,9 @@ public class UserXmlTest {
 
 		ArrayList<NodeImpl> names = given()
 				// RequestSpecification names = given()
-				.when().get(getUsersUrl()).then().assertThat().statusCode(HttpStatus.SC_OK).extract()
+				.when().get(getUsersUrl())
+				.then().assertThat()
+				.statusCode(HttpStatus.SC_OK).extract()
 				.path("users.user.name.findAll{it.toString().contains('n')}");
 
 		Assert.assertEquals(2, names.size());

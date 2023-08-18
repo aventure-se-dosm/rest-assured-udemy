@@ -49,7 +49,9 @@ public class UserXmlTestWithStaticAttributes {
 		reqBuilder.log(LogDetail.ALL).build();
 		
 		ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
-		resBuilder.expectStatusCode(HttpStatus.SC_OK).build();
+		resBuilder
+		.expectStatusCode(HttpStatus.SC_OK)
+		.build();
 
 		//allowing all specifications above used by any test
 		RestAssured.requestSpecification = reqSpec;
@@ -74,26 +76,38 @@ public class UserXmlTestWithStaticAttributes {
 	@Test
 	public void devoTrabalharComXmlNaRaiz() {
 
-		given().when().get("3").then().assertThat().statusCode(HttpStatus.SC_OK).rootPath("user")
+		given().log().all()
+		.when().get("3")
+		.then().log().all()
+			.assertThat()
+			.statusCode(HttpStatus.SC_OK).rootPath("user")
+			.body("name", Matchers.is("Ana Julia"))
+			.body("@id", is("3")).body("@id", not(is(3)))
+			.body("filhos.size()", is(1))
+			.body("filhos.name.size()", is(2))
+			
+			// forma esdrúxula,	// mas possível
+			.body("filhos", hasItems("ZezinhoLuizinho"))
 
-				.body("name", Matchers.is("Ana Julia")).body("@id", is("3")).body("@id", not(is(3)))
-				.body("filhos.size()", is(1)).body("filhos.name.size()", is(2))
-				// forma esdr�xula, mas possível
-				.body("filhos", hasItems("ZezinhoLuizinho"))
-
-				// redefinindo a raiz para 'user.filhos':
-				.rootPath("user.filhos").body("size()", is(1)).body("name.size()", is(2))
-				.body("name", hasItems("Zezinho", "Luizinho")).body("name", hasItem("Zezinho"))
-				.body("name[0]", is("Zezinho")).body("name[1]", is("Luizinho"));
+			// redefinindo a raiz para 'user.filhos':
+			.rootPath("user.filhos")
+			
+			.body("size()", is(1)).body("name.size()", is(2))
+			.body("name", hasItems("Zezinho", "Luizinho"))
+			.body("name", hasItem("Zezinho"))
+			.body("name[0]", is("Zezinho")).body("name[1]", is("Luizinho"));
 	}
 
 	@Test
 	public void devoFazerPesquisasAvancadasComXMLEJava() {
 
-		ArrayList<NodeImpl> names = given()
-				// RequestSpecification names = given()
-				.when().get("").then().assertThat().statusCode(HttpStatus.SC_OK).extract()
-				.path("users.user.name.findAll{it.toString().contains('n')}");
+		ArrayList<NodeImpl> names = 
+				given()
+				.when()
+					.get("")
+				.then().assertThat()
+				.statusCode(HttpStatus.SC_OK)
+				.extract().path("users.user.name.findAll{it.toString().contains('n')}");
 
 		Assert.assertEquals(2, names.size());
 		Assert.assertTrue(names.get(1).toString().equalsIgnoreCase("Ana JULIA"));
@@ -110,7 +124,8 @@ public class UserXmlTestWithStaticAttributes {
 		.then()// .assertThat()
 			//.spec(resSpec) --> no longer needed
 		//                   as setup in the method setUp()     
-				.statusCode(HttpStatus.SC_OK).body(hasXPath("count(/users/user)", is("3")))
+				.statusCode(HttpStatus.SC_OK)
+				.body(hasXPath("count(/users/user)", is("3")))
 				.body(hasXPath("count(/users/user)", is(not("2")))).body(hasXPath("/users/user[@id='1']")) // full form
 																											// of this
 																											// element

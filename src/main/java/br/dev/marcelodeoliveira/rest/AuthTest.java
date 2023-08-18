@@ -1,7 +1,9 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +25,10 @@ public class AuthTest {
 	private final String openWeatherMapApiUrl = "https://api.openweathermap.org/data/2.5/weather";
 	private final String wcAquinoRestApiUrl = "https://restapi.wcaquino.me";
 	private final String barrigaRestApiUrl = "http://barrigarest.wcaquino.me";
-	private String secureHttpProtocol = "https://";
-	private String notSecureHttpProtocol = "http://";
+	/*
+	 * private String secureHttpProtocol = "https://"; private String
+	 * notSecureHttpProtocol = "http://";
+	 */
 
 	private boolean isSecure = true;
 
@@ -37,20 +41,21 @@ public class AuthTest {
 	}
 
 	private String getWcAquinoRestApi() {
-		return   wcAquinoRestApiUrl;
+		return wcAquinoRestApiUrl;
 	}
 
 	private String getBarrigarestApiUrl(String resource) {
-		return   barrigaRestApiUrl + resource;
+		return barrigaRestApiUrl + resource;
 	}
 
 	private String getOpenWeatherMap() {
-		return   this.openWeatherMapApiUrl;
+		return this.openWeatherMapApiUrl;
 	}
 
-	private String getProcol() {
-		return isSecure() ? secureHttpProtocol : notSecureHttpProtocol;
-	}
+	/*
+	 * private String getProcol() { return isSecure() ? secureHttpProtocol :
+	 * notSecureHttpProtocol; }
+	 */
 	/*
 	 * //keep it up for your end-of-course rethinks! private String
 	 * getPartialQuery(String city, String contry, String appId) { return
@@ -70,12 +75,16 @@ public class AuthTest {
 		/**
 		 * REFACTOR POINT: Use a Json with all of underlying attribute-values, so we
 		 * simply rely on serialization of models, avoiding declaration or too much
-		 * variable creation and attribuitons.
+		 * variable creation and attribution
 		 */
 
-		given().log().all().when().get(getStarWarsApiUrl() + "/people/1").then().log().all().assertThat()
-				.statusCode(HttpStatus.SC_OK).body("name", is("Luke Skywalker")).body("height", is("172"))
-				.body("hair_color", Matchers.oneOf("fair", "blond"));
+		given().log().all()
+		.when()
+			.get(getStarWarsApiUrl() + "/people/1")
+		.then().log().all().assertThat()
+			.statusCode(HttpStatus.SC_OK)
+			.body("name", is("Luke Skywalker")).body("height", is("172"))
+			.body("hair_color", Matchers.oneOf("fair", "blond"));
 	}
 
 	private String getStarWarsApiUrl() {
@@ -86,9 +95,17 @@ public class AuthTest {
 	public void deveAcessarCidadeComQueryParam() {
 
 		given().log().all().queryParam("q", String.join(",", "Weingarten", "DE")).queryParam("units", "metric")
-				.queryParam("appid", appIdKey).when().get(getOpenWeatherMap()).then().log().all().assertThat()
-				.statusCode(HttpStatus.SC_OK).body("coord.lon", is(9.6333F)).body("coord.lat", is(47.8F))
-				.body("main.temp", lessThan(50.0F)) // 'F' stands for 'float' here.
+				.queryParam("appid", appIdKey)
+
+				.when().get(getOpenWeatherMap())
+
+				.then().log().all().assertThat().statusCode(HttpStatus.SC_OK)
+
+				.body("coord.lon", is(9.6333F)).body("coord.lat", is(47.8F)).body("main.temp", lessThan(50.0F)) // 'F'
+																												// stands
+																												// for
+																												// 'float'
+																												// here.
 		;
 		// Although global warming could make this wrong glimpse reality soon!
 
@@ -116,8 +133,10 @@ public class AuthTest {
 		/*
 		 * "coord" { "lon": 9.6333, "lat": 47.8 }
 		 */
-		given().log().all().when().get(getOpenWeatherMap() + getPartialQuery()).then().log().all().assertThat()
-				.statusCode(HttpStatus.SC_OK);
+		given().log().all().when().get(getOpenWeatherMap() + getPartialQuery())
+				// SAME AS: get("?q=São
+				// Paulo,BR&unit=metrics&appid=c47d4fc91b865630668a1be01db21a05")
+				.then().log().all().assertThat().statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test
@@ -128,23 +147,17 @@ public class AuthTest {
 
 	@Test
 	public void deveFazerAutenticacaoBasica1() {
-		given().log().all()
-		.when()
-			.get("https://admin:senha@restapi.wcaquino.me/basicauth")
-		.then().log().all().assertThat()
-		.body("status", is("logado")).statusCode(HttpStatus.SC_OK);
+		given().log().all().when().get("https://admin:senha@restapi.wcaquino.me/basicauth").then().log().all()
+				.assertThat().body("status", is("logado")).statusCode(HttpStatus.SC_OK);
 	}
-
 
 	@Test
 	public void deveFazerAutenticacaoBasica2() {
 		String username = "admin";
 		String password = "senha";
 
-		given().log().all().auth()
-		.basic(username, password)
-		.when().get(getWcAquinoRestApi() + "/basicauth")
-		.then().log().all().assertThat().statusCode(HttpStatus.SC_OK).body("status", is("logado"));
+		given().log().all().auth().basic(username, password).when().get(getWcAquinoRestApi() + "/basicauth").then()
+				.log().all().assertThat().statusCode(HttpStatus.SC_OK).body("status", is("logado"));
 	}
 
 	public String getSeuBarrigaLoginJWT() {
@@ -160,11 +173,8 @@ public class AuthTest {
 	@Test
 	public void deveFazerAutenticacaoComJwt() {
 		given().log().all().contentType(ContentType.JSON)
-				.header("Authorization", String.join(" ", "JWT", getSeuBarrigaLoginJWT()))
-			.when()
-				.get(getBarrigarestApiUrl("/contas"))
-				.then().log().all().assertThat()
-				.statusCode(HttpStatus.SC_OK)
+				.header("Authorization", String.join(" ", "JWT", getSeuBarrigaLoginJWT())).when()
+				.get(getBarrigarestApiUrl("/contas")).then().log().all().assertThat().statusCode(HttpStatus.SC_OK)
 				.body("nome", hasItems("Conta de Teste Jwt"));
 		;
 	}
@@ -174,70 +184,56 @@ public class AuthTest {
 		String username = "admin";
 		String password = "senha";
 
-		given().log().all()
-		.auth().preemptive().basic(username, password).when()
+		given().log().all().auth().preemptive().basic(username, password).when()
 				.get(getWcAquinoRestApi() + "/basicauth2").then().log().all().assertThat().statusCode(HttpStatus.SC_OK);
 	}
-	
+
 	@Test
 	public void deveAcessarAplicacaoWeb() {
-		//seubarriga
+		// seubarriga
 		String email = "email"; // <input id='email' ... name='email'>
 		String senha = "senha"; // <input id='senha' ... name='senha'>
 		String firstAccountXMLPathLocation = "html.body.table.tbody.tr[0].td[0]";
 
-		String cookie = given().log().all()
-		.contentType(ContentType.URLENC.withCharset(CharEncoding.UTF_8))
-			.formParam(email, "automation.dvmrkolv@gmail.com")
-			.formParam(senha, "wXY2AUQXYy3gbeq")
-		.when()
-			.post("https://seubarriga.wcaquino.me/logar")
-		.then().log().all()
-		.extract().header("set-cookie");
-		
-		given().log().all()
-			.cookie("connect.sid", getCookieValue(cookie))
-		.when()
-			.get("https://seubarriga.wcaquino.me/contas")
-		.then().log().all()
-		.statusCode(HttpStatus.SC_OK)
-		.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))	
-		.body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt"))	
-		.extract().path(firstAccountXMLPathLocation)	
-		;
+		String cookie = getCookieStringFromResponse(email, senha);
+
+		given().log().all().cookie("connect.sid", getCookieValue(cookie)).when()
+				.get("https://seubarriga.wcaquino.me/contas").then().log().all().statusCode(HttpStatus.SC_OK)
+				.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))
+				.body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt")).extract()
+				.path(firstAccountXMLPathLocation);
 	}
-	
+
 	@Test
-	public void deveAcessarAplicacaoWebExtraindoStringXmlPath() {
-		//seubarriga
+	public void deveAcessarAplicacaoWebExtraindoStringXmlPathECookies() {
+		// It doesn't work if we're using the API 'barrigarest' instead of 'seubarriga'
+
+		// seubarriga
 		String email = "email"; // <input id='email' ... name='email'>
 		String senha = "senha"; // <input id='senha' ... name='senha'>
 		String firstAccountXMLPathLocation = "html.body.table.tbody.tr[0].td[0]";
-		
-		String cookie = given().log().all()
-				.contentType(ContentType.URLENC.withCharset(CharEncoding.UTF_8))
-				.formParam(email, "automation.dvmrkolv@gmail.com")
-				.formParam(senha, "wXY2AUQXYy3gbeq")
-				.when()
-				.post("https://seubarriga.wcaquino.me/logar")
-				.then().log().all()
-				.extract().header("set-cookie");
-		
-		String body = given().log().all()
-				.cookie("connect.sid", getCookieValue(cookie))
-				.when()
-				.get("https://seubarriga.wcaquino.me/contas")
-				.then().log().all()
-				.statusCode(HttpStatus.SC_OK)
-				.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))	
-				//.body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt"))	
-				//.extract().path(firstAccountXMLPathLocation)	
-				.extract().body().asString()	
-				;
+
+		String cookie = getCookieStringFromResponse(email, senha);
+
+		String body = given().log().all().cookie("connect.sid", getCookieValue(cookie)).when()
+				.get("http://seubarriga.wcaquino.me/contas").then().log().all().statusCode(HttpStatus.SC_OK)
+				.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))
+				// .body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt"))
+				// .extract().path(firstAccountXMLPathLocation)
+				.extract().body().asString();
 		XmlPath xmlcontaPathPath = new XmlPath(CompatibilityMode.HTML, body);
 		System.out.println(xmlcontaPathPath.getString(firstAccountXMLPathLocation));
 	}
-	
+
+	private String getCookieStringFromResponse(String email, String senha) {
+		String cookie = given().log().all().contentType(ContentType.URLENC.withCharset(CharEncoding.UTF_8))
+				.formParam(email, "automation.dvmrkolv@gmail.com").formParam(senha, "wXY2AUQXYy3gbeq").when()
+				// .post("/signin")
+				.post("http://seubarriga.wcaquino.me/logar")// working well
+				.then().log().all().extract().header("set-cookie");
+		return cookie;
+	}
+
 	private String getCookieValue(String cookie) {
 		return cookie.split("=")[1].split(";")[0];
 	}

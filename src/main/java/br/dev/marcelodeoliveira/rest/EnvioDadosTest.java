@@ -22,13 +22,6 @@ public class EnvioDadosTest {
 			.log().all().assertThat()
 		.statusCode(HttpStatus.SC_OK)
 		.contentType(ContentType.JSON)
-		//.body("user.@id", is(notNullValue()))
-		//.body("user.name", is("Jose")) //we have faced issues with encoding
-		//when we use utf-8 belonged chars, such as in 'José'.
-		
-		//.body("user.age", greaterThan(new Integer(0)))
-		//.body("age", is(50)) //it doesn't work: xlm numeric values will be send as String	
-		//.body("user.age", is("50"))
 		;
 	}
 	@Test 
@@ -48,13 +41,6 @@ public class EnvioDadosTest {
 		.log().all().assertThat()
 		.statusCode(HttpStatus.SC_OK)
 		.contentType(containsString("utf-8"))
-		//.body("user.@id", is(notNullValue()))
-		//.body("user.name", is("Jose")) //we have faced issues with encoding
-		//when we use utf-8 belonged chars, such as in 'José'.
-		
-		//.body("user.age", greaterThan(new Integer(0)))
-		//.body("age", is(50)) //it doesn't work: xlm numeric values will be send as String	
-		//.body("user.age", is("50"))
 		;
 	}
 
@@ -79,13 +65,6 @@ public class EnvioDadosTest {
 		.log().all().assertThat()
 		.statusCode(HttpStatus.SC_OK)
 		//.contentType(containsString("utf-8"))
-		//.body("user.@id", is(notNullValue()))
-		//.body("user.name", is("Jose")) //we have faced issues with encoding
-		//when we use utf-8 belonged chars, such as in 'José'.
-		
-		//.body("user.age", greaterThan(new Integer(0)))
-		//.body("age", is(50)) //it doesn't work: xlm numeric values will be send as String	
-		//.body("user.age", is("50"))
 		;
 	}
 	

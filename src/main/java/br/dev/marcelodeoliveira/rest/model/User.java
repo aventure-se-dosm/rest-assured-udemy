@@ -26,6 +26,7 @@ public class User {
 
 	@XmlAttribute
 	private Long id;
+	
 	private String name;
 	private Integer age;
 	private Float salary;

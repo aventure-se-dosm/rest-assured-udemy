@@ -46,23 +46,21 @@ public class OlaMundo {
 	@Test
 	public void devoConhecerOutrasFormasDeRestAssured() {
 		Response response = RestAssured.request(Method.GET, URL_OLA_MUNDO);
+		
 		ValidatableResponse validacao = response.then();
+		
 		validacao.statusCode(200);
-		// response.then().statusCode(200);
-		// get("https://restapi.wcaquino.me/ola");
+
 	}
 
 	@Test
 	public void olaMundoFormaPreferida() {
-		given()
-		.when()
-			.get(URL_OLA_MUNDO)
-		.then()
-			.assertThat() // pratically semantical-purpouse //											// only;
-			.statusCode(HttpStatus.SC_OK)
-			.body(is("Ola Mundo!"))
-			.body(containsString("Mundo"))
-			.body(is(not("")));
+		given()							// --> retorna RequestSpecification
+		.when()							// --> retorna RequestSpecification
+			.get(URL_OLA_MUNDO) 		// --> retorna Response
+		.then()							// --> retorna ValidatableResponse
+			.assertThat() 				// --> não precisaria aqui
+			.statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test

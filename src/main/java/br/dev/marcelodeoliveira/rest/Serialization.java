@@ -70,9 +70,17 @@ public class Serialization {
 
 	@Test
 	public void deveSalvarUmUsuarioJson() {
-		given().log().all().contentType(ContentType.JSON).body(getUserJson("José", 50)).when().post(getUsersEndpoint())
-				.then().log().all().assertThat().body("id", is(notNullValue())).body("name", is("José"))
-				.body("age", greaterThan(new Integer(0))).body("age", is(50));
+		given().log().all()
+			.contentType(ContentType.JSON)
+			.body(getUserJson("José", 50))
+		
+		.when().post(getUsersEndpoint())
+		
+		.then().log().all()
+			.assertThat().body("id", is(notNullValue()))
+			.body("name", is("José"))
+			.body("age", greaterThan(new Integer(0)))
+			.body("age", is(50));
 	}
 
 	@Test
@@ -86,13 +94,25 @@ public class Serialization {
 		 * Jackson (Databind) or Gson in the classpath.
 		 * 
 		 */
-		Map<String, Object> params = new HashMap<String, Object>();
 
+		//representa o Model do usuário
+		Map<String, Object> params = new HashMap<String, Object>();
+		
 		params.put("name", "Maria Mapper");
 		params.put("age", 29);
-		given().log().all().contentType(ContentType.JSON).body(params).when().post(getUsersEndpoint()).then().log()
-				.all().assertThat().body("id", is(notNullValue())).body("name", is("Maria Mapper"))
-				.body("age", greaterThan(new Integer(0))).body("age", is(29));
+		
+		given().log().all()
+			.contentType(ContentType.JSON)
+			.body(params)
+		
+		.when().post(getUsersEndpoint())
+		
+		.then().log().all()
+			.assertThat()
+			.body("id", is(notNullValue()))
+			.body("name", is("Maria Mapper"))
+			.body("age", greaterThan(new Integer(0)))
+			.body("age", is(29));
 	}
 
 	@Test
@@ -105,12 +125,25 @@ public class Serialization {
 		 * Jackson (Databind) or Gson in the classpath.
 		 * 
 		 */
+		
+		//	Better than relying on some Map<K, V> maps
+		//	We can use our Model Object instances, rather.
 		User user = new User("Maria Mapper", 29, 3504.00F);
 
-		given().log().all().contentType(ContentType.JSON).body(user).when().post(getUsersEndpoint()).then().log().all()
-				.assertThat().body("id", is(notNullValue())).body("name", is("Maria Mapper"))
-				.body("age", greaterThan(new Integer(0))).body("age", is(29))
-				.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()));
+		given().log().all()
+			.contentType(ContentType.JSON)
+			.body(user)
+		
+		.when().post(getUsersEndpoint())
+		
+		.then().log().all()
+			.assertThat()
+			.statusCode(HttpStatus.SC_CREATED)
+			.body("id", is(notNullValue()))
+			.body("name", is("Maria Mapper"))
+			.body("age", greaterThan(new Integer(0)))
+			.body("age", is(29))
+			.body("salary", Matchers.greaterThan(MINIMUM_SALARY.intValue()));
 	}
 
 	@Test
@@ -157,12 +190,15 @@ public class Serialization {
 		User user = new User("Usuário Desserializado", new Integer(40), 2500.00f);
 		
 		given().log().all()
-		.config(RestAssured.config().encoderConfig(encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(true)))
-		.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
+			.config(RestAssured.config()
+				.encoderConfig(encoderConfig()
+						.appendDefaultContentCharsetToContentTypeIfUndefined(true)))
+			
+			.contentType(ContentType.XML.withCharset(CharEncoding.UTF_8))
 			.body(user)
-			.when()
-				.post(getUsersXMLEndpoint())
-			.then().log().all()
+		.when()
+			.post(getUsersXMLEndpoint())
+		.then().log().all()
 			.assertThat()
 			.statusCode(201)
 			.body("user.@id", is(notNullValue()))
