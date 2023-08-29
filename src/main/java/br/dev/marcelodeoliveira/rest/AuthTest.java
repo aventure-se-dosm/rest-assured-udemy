@@ -1,9 +1,7 @@
 package br.dev.marcelodeoliveira.rest;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,18 +23,8 @@ public class AuthTest {
 	private final String openWeatherMapApiUrl = "https://api.openweathermap.org/data/2.5/weather";
 	private final String wcAquinoRestApiUrl = "https://restapi.wcaquino.me";
 	private final String barrigaRestApiUrl = "http://barrigarest.wcaquino.me";
-	/*
-	 * private String secureHttpProtocol = "https://"; private String
-	 * notSecureHttpProtocol = "http://";
-	 */
 
-	private boolean isSecure = true;
-
-	private boolean isSecure() {
-		return isSecure;
-	}
-
-	private String getPartialQuery() {
+		private String getPartialQuery() {
 		return String.format("?q=%s,%s&unit=%s&appid=%s", city, countryIsoAlpha2, unit, appIdKey);
 	}
 
@@ -52,10 +40,7 @@ public class AuthTest {
 		return this.openWeatherMapApiUrl;
 	}
 
-	/*
-	 * private String getProcol() { return isSecure() ? secureHttpProtocol :
-	 * notSecureHttpProtocol; }
-	 */
+	
 	/*
 	 * //keep it up for your end-of-course rethinks! private String
 	 * getPartialQuery(String city, String contry, String appId) { return
@@ -101,11 +86,8 @@ public class AuthTest {
 
 				.then().log().all().assertThat().statusCode(HttpStatus.SC_OK)
 
-				.body("coord.lon", is(9.6333F)).body("coord.lat", is(47.8F)).body("main.temp", lessThan(50.0F)) // 'F'
-																												// stands
-																												// for
-																												// 'float'
-																												// here.
+				.body("coord.lon", is(9.6333F)).body("coord.lat", is(47.8F)).body("main.temp", lessThan(50.0F)) 
+				// 'F' stands for 'float'  here.
 		;
 		// Although global warming could make this wrong glimpse reality soon!
 
@@ -134,8 +116,8 @@ public class AuthTest {
 		 * "coord" { "lon": 9.6333, "lat": 47.8 }
 		 */
 		given().log().all().when().get(getOpenWeatherMap() + getPartialQuery())
-				// SAME AS: get("?q=São
-				// Paulo,BR&unit=metrics&appid=c47d4fc91b865630668a1be01db21a05")
+		// SAME AS:
+		//get("?q=SãoPaulo,BR&unit=metrics&appid=c47d4fc91b865630668a1be01db21a05")
 				.then().log().all().assertThat().statusCode(HttpStatus.SC_OK);
 	}
 
@@ -156,8 +138,11 @@ public class AuthTest {
 		String username = "admin";
 		String password = "senha";
 
-		given().log().all().auth().basic(username, password).when().get(getWcAquinoRestApi() + "/basicauth").then()
-				.log().all().assertThat().statusCode(HttpStatus.SC_OK).body("status", is("logado"));
+		given().log().all()
+			.auth().basic(username, password)
+		.when().get(getWcAquinoRestApi() + "/basicauth")
+		.then().log().all()
+			.assertThat().statusCode(HttpStatus.SC_OK).body("status", is("logado"));
 	}
 
 	public String getSeuBarrigaLoginJWT() {
@@ -167,18 +152,22 @@ public class AuthTest {
 		login.put("senha", "wXY2AUQXYy3gbeq");
 
 		return given().log().all()
-				.body(login).contentType(ContentType.JSON)
-				.when()
-				.post(getBarrigarestApiUrl("/signin")).then().log().all().extract().path("token").toString();
+			.body(login).contentType(ContentType.JSON)
+		.when()
+			.post(getBarrigarestApiUrl("/signin"))
+		.then().log().all().extract().path("token").toString();
 	}
 
 	@Test
 	public void deveFazerAutenticacaoComJwt() {
-		given().log().all().contentType(ContentType.JSON)
-				.header("Authorization", String.join(" ", "JWT", getSeuBarrigaLoginJWT())).when()
-				.get(getBarrigarestApiUrl("/contas")).then().log().all().assertThat().statusCode(HttpStatus.SC_OK)
-				.statusCode(200)
-				//.body("nome", hasItems("Conta de Teste Jwt"));
+		given().log().all()
+			.contentType(ContentType.JSON)
+			.header("Authorization", String.join(" ", "JWT", getSeuBarrigaLoginJWT()))
+		.when()
+			.get(getBarrigarestApiUrl("/contas"))
+		.then().log().all()
+			.assertThat().statusCode(HttpStatus.SC_OK)
+			.statusCode(200)
 		;
 	}
 
@@ -187,24 +176,33 @@ public class AuthTest {
 		String username = "admin";
 		String password = "senha";
 
-		given().log().all().auth().preemptive().basic(username, password).when()
-				.get(getWcAquinoRestApi() + "/basicauth2").then().log().all().assertThat().statusCode(HttpStatus.SC_OK);
+		given().log().all()
+			.auth().preemptive().basic(username, password)
+		.when()
+			.get(getWcAquinoRestApi() + "/basicauth2")
+		.then().log().all()
+			.assertThat()
+			.statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test
 	public void deveAcessarAplicacaoWeb() {
 		// seubarriga
+		//TODO: Crie a conta "COnta
 		String email = "email"; // <input id='email' ... name='email'>
 		String senha = "senha"; // <input id='senha' ... name='senha'>
 		String firstAccountXMLPathLocation = "html.body.table.tbody.tr[0].td[0]";
 
 		String cookie = getCookieStringFromResponse(email, senha);
 
-		given().log().all().cookie("connect.sid", getCookieValue(cookie)).when()
-				.get("https://seubarriga.wcaquino.me/contas").then().log().all().statusCode(HttpStatus.SC_OK)
-				.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))
-				.body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt")).extract()
-				.path(firstAccountXMLPathLocation);
+		given().log().all()
+			.cookie("connect.sid", getCookieValue(cookie))
+		.when()
+			.get("https://seubarriga.wcaquino.me/contas")
+		.then().log().all().statusCode(HttpStatus.SC_OK)
+			.body(firstAccountXMLPathLocation, is("Conta de Teste JWT"))
+			.body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt")).extract()
+			.path(firstAccountXMLPathLocation);
 	}
 
 	@Test
@@ -218,13 +216,16 @@ public class AuthTest {
 
 		String cookie = getCookieStringFromResponse(email, senha);
 
-		String body = given().log().all().cookie("connect.sid", getCookieValue(cookie)).when()
-				.get("http://seubarriga.wcaquino.me/contas").then().log().all().statusCode(HttpStatus.SC_OK)
-				.body(firstAccountXMLPathLocation, is("Conta de Teste Jwt"))
-				// .body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt"))
-				// .extract().path(firstAccountXMLPathLocation)
+		String body = given().log().all()
+			.cookie("connect.sid", getCookieValue(cookie))
+		.when()
+			.get("http://seubarriga.wcaquino.me/contas").then().log().all().statusCode(HttpStatus.SC_OK)
+			.body(firstAccountXMLPathLocation, is("Conta de Teste JWT"))
+			// .body("html.body.table.tbody.tr[0].td[0]", is("Conta de Teste Jwt"))
+			// .extract().path(firstAccountXMLPathLocation)
 				.extract().body().asString();
 		XmlPath xmlcontaPathPath = new XmlPath(CompatibilityMode.HTML, body);
+		
 		System.out.println(xmlcontaPathPath.getString(firstAccountXMLPathLocation));
 	}
 

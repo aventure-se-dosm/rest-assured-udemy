@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.ContextAwareAuthScheme;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,6 +27,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+
+import br.dev.marcelodeoliveira.rest.model.User;;
 
 public class UserJsonTest {
 
@@ -118,7 +121,12 @@ public class UserJsonTest {
 				.body("id.max()", is(3)).body("salary.findAll{it != null}.sum()", is(closeTo(3734.5678f, 0.001)))
 				.body("salary.findAll{it != null}.sum()", allOf(greaterThan(3000d), lessThan(5000d)))
 				.body("salary.min()", is(1234.5678f));
+	}
+	@Test
+	public void testaCifraoArray() {
 
+	
+		
 	}
 
 	@Test

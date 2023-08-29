@@ -13,11 +13,19 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Type;
 import br.dev.marcelodeoliveira.rest.model.User;
 import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 
 //anotações para des-/serialização com XML
 
@@ -28,10 +36,23 @@ public class Serialization {
 	private final String URL_RESOURCE_USERS = "/users";
 	private final String URL_RESOURCE_USERSXML = "/usersXML";
 
-//	@BeforeClass
-//	public static void setupTest() {
-//		config().decoderConfig(decoderConfig().defaultContentCharset("UTF-8"));
-//	}
+	@BeforeClass
+	public static void setupTest() {
+	
+		System.out.println("\nWe'll replace global missing json field globally ignoring to specific and local annotations\n");
+		
+//		RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
+//		        new Jackson2ObjectMapperFactory() {
+//		          @Override
+//		          public ObjectMapper create(Type cls, String charset) {
+//		            ObjectMapper om = new ObjectMapper().findAndRegisterModules();
+//		            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//		            return om;
+//		          }         
+//		          
+//		        }
+//		    ));
+	}
 
 	private String getUsersResource() {
 		return this.URL_RESOURCE_USERS;
@@ -156,6 +177,24 @@ public class Serialization {
 
 		Assert.assertNotNull(user);
 		Assert.assertEquals(user.getName(), "Usuario Desserializado");
+		;
+	}
+	@Test
+	public void deveDesserializarTodosOsUsuario() {
+		
+				
+		User[]  todosUsuarios = given().log().all().contentType(ContentType.JSON)
+				.when().get("https://restapi.wcaquino.me/users/")
+				.then().log().all().statusCode(HttpStatus.SC_OK)
+		.statusCode(HttpStatus.SC_OK)
+		.extract()
+		.body()
+		.as(User[].class);
+		
+		String s = todosUsuarios.toString();
+		System.out.println(s);
+		Assert.assertEquals(todosUsuarios.length,3);
+		Assert.assertTrue(todosUsuarios.length == 3);
 		;
 	}
 
